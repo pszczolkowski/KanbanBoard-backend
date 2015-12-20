@@ -1,0 +1,11 @@
+CREATE TABLE label (
+	id BIGINT PRIMARY KEY AUTO_INCREMENT,
+	board_id BIGINT NOT NULL CHECK (board_id >= 1),
+	color VARCHAR(7) NOT NULL,
+	name VARCHAR(100) NOT NULL,
+	version BIGINT NOT NULL
+	);
+
+ALTER TABLE label ADD CONSTRAINT UK_label_board_name UNIQUE (board_id, name);
+
+ALTER TABLE task ADD COLUMN label_id BIGINT;
