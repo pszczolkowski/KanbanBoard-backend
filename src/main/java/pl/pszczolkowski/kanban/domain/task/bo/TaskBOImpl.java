@@ -42,4 +42,47 @@ public class TaskBOImpl implements TaskBO {
 		return task.toSnapshot();
 	}
 
+	private void moveTask(Task task, int position) {
+		TaskSnapshot taskSnapshot = task.toSnapshot();
+		Column column = columnRepository.findOne(taskSnapshot.getColumnId());
+		
+		if (position >= column.toSnapshot().getTasks().size()) {
+			throw new IllegalArgumentException("Given position exceeds number of tasks in column");
+		}
+		
+		column.moveTask(taskSnapshot.getId(), position);
+		columnRepository.save(column);
+	}
+	
+	@Override
+	public void move(long taskId, int position) {
+		Task task = taskRepository.findOne(taskId);
+		moveTask(task, position);
+	}
+	
+	@Override
+	public void move(long taskId, Long columnId, int position) {
+		if (columnId == null) {
+			move(taskId, position);
+			return;
+		}
+		
+		Task task = taskRepository.findOne(taskId);
+		
+		TaskSnapshot taskSnapshot = task.toSnapshot();
+		if (taskSnapshot.getColumnId() == columnId) {
+			moveTask(task, position);
+		} else {
+			Column columnContainingTask = columnRepository.findOne(taskSnapshot.getColumnId());
+			Column column = columnRepository.findOne(columnId);
+			
+			columnContainingTask.removeTask(task);
+			column.addTask(task, position);
+			task.moveTo(column);
+			
+			columnRepository.save(columnContainingTask);
+			columnRepository.save(column);
+		}
+	}
+
 }

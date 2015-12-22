@@ -6,6 +6,7 @@ import static javax.persistence.GenerationType.AUTO;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 
 import javax.persistence.Entity;
 import javax.persistence.FetchType;
@@ -91,6 +92,51 @@ public class Column {
 
 	long getId() {
 		return id;
+	}
+
+	private Optional<Integer> indexOfTask(long taskId) {
+		Integer position = null;
+		
+		for (int i = 0; i < tasks.size(); i++) {
+			if (taskId == tasks.get(i).getId()) {
+				position = i;
+				break;
+			}
+		}
+		
+		return Optional.ofNullable(position);
+	}
+
+	private void insertTask(Task task, int position) {
+		tasks.add(position, task);
+		for (int i = 0; i < tasks.size(); i++) {
+			tasks.get(i).setPosition(i);
+		}
+	}
+	
+	public void moveTask(long taskId, int position) {
+		Optional<Integer> taskPosition = indexOfTask(taskId);
+		if (!taskPosition.isPresent()) {
+			throw new IllegalArgumentException("Task with id <{" + taskId + "}> is not assigned to the column");
+		}
+		
+		Task task = tasks.remove(taskPosition.get().intValue());
+		insertTask(task, position);
+	}
+
+	public void addTask(Task task, int position) {
+		if (indexOfTask(task.getId()).isPresent()) {
+			throw new IllegalArgumentException("Task with id <{" + task.getId() + "}> is already assigned to column");
+		}
+		
+		insertTask(task, position);
+	}
+
+	public void removeTask(Task task) {
+		Optional<Integer> taskPosition = indexOfTask(task.getId());
+		if (taskPosition.isPresent()) {
+			tasks.remove(taskPosition.get().intValue());
+		}
 	}
 	
 }

@@ -83,5 +83,17 @@ public class Task {
 		LocalDateTime createdAtExport = LocalDateTimePersistenceConverter.convertToEntityAttributeValue(createdAt);
 		return new TaskSnapshot(id, idOnBoard, boardId, title, description, assigneeId, position, labelId, createdAtExport, column.getId());
 	}
+
+	Long getId() {
+		return id;
+	}
+
+	void setPosition(int position) {
+		this.position = position;
+	}
+
+	public void moveTo(Column column) {
+		this.column = column;
+	}
 	
 }
