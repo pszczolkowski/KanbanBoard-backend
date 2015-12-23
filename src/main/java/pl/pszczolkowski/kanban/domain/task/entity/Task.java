@@ -95,5 +95,10 @@ public class Task {
 	public void moveTo(Column column) {
 		this.column = column;
 	}
+
+	public void edit(String title, String description) {
+		this.title = title;
+		this.description = description;
+	}
 	
 }

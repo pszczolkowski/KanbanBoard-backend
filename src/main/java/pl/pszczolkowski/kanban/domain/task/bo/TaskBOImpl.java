@@ -1,5 +1,6 @@
 package pl.pszczolkowski.kanban.domain.task.bo;
 
+import java.util.Objects;
 import java.util.Optional;
 
 import org.slf4j.Logger;
@@ -82,6 +83,18 @@ public class TaskBOImpl implements TaskBO {
 			
 			columnRepository.save(columnContainingTask);
 			columnRepository.save(column);
+		}
+	}
+
+	@Override
+	public void edit(Long taskId, String title, String description) {
+		Task task = taskRepository.findOne(taskId);
+		TaskSnapshot taskSnapshot = task.toSnapshot();
+		
+		if (!title.equals(taskSnapshot.getTitle()) ||
+				!Objects.equals(description, taskSnapshot.getDescription())) {
+			task.edit(title, description);
+			taskRepository.save(task);
 		}
 	}
 
