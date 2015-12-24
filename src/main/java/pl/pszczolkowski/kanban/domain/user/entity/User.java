@@ -48,4 +48,5 @@ public class User {
 
 		return new UserSnapshot(id, login, password, username);
 	}
+	
 }

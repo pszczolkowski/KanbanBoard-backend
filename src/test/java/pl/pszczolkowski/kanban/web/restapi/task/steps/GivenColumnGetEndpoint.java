@@ -21,7 +21,7 @@ public class GivenColumnGetEndpoint extends GivenStage<GivenColumnGetEndpoint> {
 
 	public GivenColumnGetEndpoint a_board() {
 		boardSnapshot = aBoard()
-			.withOwnerId(getLoggedUser().getId())
+			.withAuthorId(getLoggedUser().getId())
 			.build();
 		
 		return this;

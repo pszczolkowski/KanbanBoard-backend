@@ -72,7 +72,7 @@ public class LabelApi {
 		}
 			
 		Long loggedUserId = LoggedUserService.getSnapshot().getId();
-		if (boardSnapshot.getOwnerId() != loggedUserId) {
+		if (!userIsBoardMember(loggedUserId, boardSnapshot)) {
 			return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
 		}
 		
@@ -87,6 +87,13 @@ public class LabelApi {
 				.body(labels);
 	}
 	
+	private boolean userIsBoardMember(Long loggedUserId, BoardSnapshot boardSnapshot) {
+		return boardSnapshot
+			.getMembers()
+			.stream()
+			.anyMatch(m -> m.getUserId() == loggedUserId);
+	}
+
 	@ApiOperation(
 		value = "Create new label",
 		notes = "Returns created label")

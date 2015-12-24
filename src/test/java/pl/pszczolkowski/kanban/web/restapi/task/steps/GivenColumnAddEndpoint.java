@@ -27,7 +27,7 @@ public class GivenColumnAddEndpoint extends GivenStage<GivenColumnAddEndpoint> {
 	
 	public GivenColumnAddEndpoint a_board_that_logged_user_has_access_to() {
 		boardSnapshot = aBoard()
-			.withOwnerId(getLoggedUser().getId())
+			.withAuthorId(getLoggedUser().getId())
 			.build();
 		
 		return this;

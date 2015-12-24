@@ -28,8 +28,8 @@ public class BoardSnapshotFinderImpl implements BoardSnapshotFinder {
 	}
 	
 	@Override
-	public List<BoardSnapshot> findByOwnerId(long ownerId) {
-		List<Board> boards = boardRepository.findByOwnerId(ownerId);
+	public List<BoardSnapshot> findByMemberId(long memberId) {
+		List<Board> boards = boardRepository.findByMemberId(memberId);
 		return snapshotsFrom(boards);
 	}
 
@@ -40,14 +40,8 @@ public class BoardSnapshotFinderImpl implements BoardSnapshotFinder {
 	}
 
 	@Override
-	public BoardSnapshot findByIdAndOwnerId(long boardId, Long ownerId) {
-		Board board = boardRepository.findByIdAndOwnerId(boardId, ownerId);
-		return board == null ? null : board.toSnapshot();
-	}
-
-	@Override
-	public List<BoardSnapshot> findByNameAndOWnerId(String name, Long ownerId) {
-		List<Board> boards = boardRepository.findByNameAndOwnerId(name, ownerId);
+	public List<BoardSnapshot> findByNameAndMemberId(String name, long memberId) {
+		List<Board> boards = boardRepository.findByNameAndMemberId(name, memberId);
 		return snapshotsFrom(boards);
 	}
 

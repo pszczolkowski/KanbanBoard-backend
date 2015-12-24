@@ -42,8 +42,8 @@ public class TaskUpdateValidator extends AbstractValidator {
 			return;
 		}
 		
-		BoardSnapshot boardSnapshot = boardSnapshotFinder.findByIdAndOwnerId(taskSnapshot.getBoardId(), LoggedUserService.getSnapshot().getId());
-		if (boardSnapshot == null) {
+		BoardSnapshot boardSnapshot = boardSnapshotFinder.findById(taskSnapshot.getBoardId());
+		if (boardSnapshot == null || loggedUserIsNotBoardMember(boardSnapshot)) {
 			errors.rejectValue("id", "TaskWithGivenIdDoesNotExist");
 			return;
 		}
@@ -52,6 +52,15 @@ public class TaskUpdateValidator extends AbstractValidator {
 			errors.rejectValue("labelId", "LabelWithGivenIdDoesNotExist");
 			return;
 		}
+	}
+	
+	private boolean loggedUserIsNotBoardMember(BoardSnapshot boardSnapshot) {
+		Long loggedUserId = LoggedUserService.getSnapshot().getId();
+		
+		return boardSnapshot
+				.getMembers()
+				.stream()
+				.noneMatch(m -> m.getUserId() == loggedUserId);
 	}
 	
 }

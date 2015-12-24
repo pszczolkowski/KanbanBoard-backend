@@ -3,6 +3,7 @@ package pl.pszczolkowski.kanban.web.restapi.label;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.validation.Errors;
 
+import pl.pszczolkowski.kanban.domain.board.entity.Permissions;
 import pl.pszczolkowski.kanban.domain.board.finder.BoardSnapshotFinder;
 import pl.pszczolkowski.kanban.domain.board.snapshot.BoardSnapshot;
 import pl.pszczolkowski.kanban.domain.label.finder.LabelSnapshotFinder;
@@ -37,7 +38,7 @@ public class LabelNewValidator extends AbstractValidator {
 			return;
 		}
 		
-		if (boardSnapshot.getOwnerId() != LoggedUserService.getSnapshot().getId()) {
+		if (loggedUserIsNotBoardAdmin(boardSnapshot)) {
 			errors.rejectValue("boardId", "BoardWithGivenIdDoesntExist");
 			return;
 		}
@@ -46,6 +47,19 @@ public class LabelNewValidator extends AbstractValidator {
 			errors.rejectValue("name", "LabelWithGivenNameAlreadyExistsOnTheBoard");
 			return;
 		}
+	}
+
+	private boolean loggedUserIsNotBoardAdmin(BoardSnapshot boardSnapshot) {
+		Long loggedUserId = LoggedUserService.getSnapshot().getId();
+		
+		return boardSnapshot
+			.getMembers()
+			.stream()
+			.filter(m -> m.getUserId() == loggedUserId)
+			.filter(m -> m.getPermissions() == Permissions.ADMIN)
+			.findFirst()
+			.map(m -> false)
+			.orElse(true);
 	}
 	
 }

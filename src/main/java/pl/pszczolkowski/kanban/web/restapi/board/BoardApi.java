@@ -6,25 +6,36 @@ import static org.springframework.web.bind.annotation.RequestMethod.GET;
 import static org.springframework.web.bind.annotation.RequestMethod.POST;
 
 import java.util.List;
+import java.util.Map;
 
 import javax.validation.Valid;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
+import org.springframework.validation.Validator;
+import org.springframework.web.bind.WebDataBinder;
+import org.springframework.web.bind.annotation.InitBinder;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+import com.fasterxml.jackson.annotation.JsonView;
+
 import io.swagger.annotations.ApiOperation;
 import io.swagger.annotations.ApiResponse;
 import io.swagger.annotations.ApiResponses;
 import pl.pszczolkowski.kanban.domain.board.bo.BoardBO;
+import pl.pszczolkowski.kanban.domain.board.entity.Permissions;
 import pl.pszczolkowski.kanban.domain.board.finder.BoardSnapshotFinder;
+import pl.pszczolkowski.kanban.domain.board.snapshot.BoardMemberSnapshot;
 import pl.pszczolkowski.kanban.domain.board.snapshot.BoardSnapshot;
+import pl.pszczolkowski.kanban.domain.user.finder.UserSnapshotFinder;
+import pl.pszczolkowski.kanban.domain.user.snapshot.UserSnapshot;
 import pl.pszczolkowski.kanban.service.user.LoggedUserService;
 
 @RestController
@@ -33,24 +44,35 @@ public class BoardApi {
 
 	private final BoardBO boardBO;
 	private final BoardSnapshotFinder boardSnapshotFinder;
+	private final UserSnapshotFinder userSnapshotFinder;
+	private final Validator userInvitationValidator;
 	
 	@Autowired
-	public BoardApi(BoardBO boardBO, BoardSnapshotFinder boardSnapshotFinder) {
+	public BoardApi(BoardBO boardBO, BoardSnapshotFinder boardSnapshotFinder, UserSnapshotFinder userSnapshotFinder,
+			@Qualifier("userInvitationValidator") Validator userInvitationValidator) {
 		this.boardBO = boardBO;
 		this.boardSnapshotFinder = boardSnapshotFinder;
+		this.userSnapshotFinder = userSnapshotFinder;
+		this.userInvitationValidator = userInvitationValidator;
 	}
 
+	@InitBinder("userInvitation")
+	protected void initNewBinder(WebDataBinder binder) {
+		binder.setValidator(userInvitationValidator);
+	}
+	
 	@ApiOperation(
 		value = "Get all boards that logged user has access to",
 		notes = "Returns all boards that logged user has access to")
 	@ApiResponses({
 		@ApiResponse(code = 200, message = "Boards returned")})
+	@JsonView(View.Summary.class)
 	@RequestMapping(method = GET)
 	public HttpEntity<List<Board>> list() {
 		Long loggedUserId = LoggedUserService.getSnapshot().getId();
 		
 		List<Board> boards = boardSnapshotFinder
-			.findByOwnerId(loggedUserId)
+			.findByMemberId(loggedUserId)
 			.stream()
 			.map(Board::new)
 			.collect(toList());
@@ -58,6 +80,15 @@ public class BoardApi {
 		return ResponseEntity
 				.ok()
 				.body(boards);
+	}
+	
+	private boolean loggedUserIsBoardMember(BoardSnapshot boardSnapshot) {
+		Long loggedUserId = LoggedUserService.getSnapshot().getId();
+		
+		return boardSnapshot
+			.getMembers()
+			.stream()
+			.anyMatch(m -> m.getUserId() == loggedUserId);
 	}
 	
 	@ApiOperation(
@@ -68,16 +99,23 @@ public class BoardApi {
 		@ApiResponse(code = 404, message = "Board with given id doesn't exist")})
 	@RequestMapping("/{boardId}")
 	public HttpEntity<Board> get(@PathVariable("boardId") long boardId) {
-		Long loggedUserId = LoggedUserService.getSnapshot().getId();
-		BoardSnapshot boardSnapshot = boardSnapshotFinder.findByIdAndOwnerId(boardId, loggedUserId);
+		BoardSnapshot boardSnapshot = boardSnapshotFinder.findById(boardId);
 		
-		if (boardSnapshot == null) {
+		if (boardSnapshot == null || !loggedUserIsBoardMember(boardSnapshot)) {
 			return new ResponseEntity<>(HttpStatus.NOT_FOUND);
-		} else {
-			return ResponseEntity
-					.ok()
-					.body(new Board(boardSnapshot));
 		}
+	
+		List<Long> memberIds = boardSnapshot
+			.getMembers()
+			.stream()
+			.map(BoardMemberSnapshot::getUserId)
+			.collect(toList());
+		
+		Map<Long, UserSnapshot> userSnapshots = userSnapshotFinder.findAllAsMap(memberIds);
+		
+		return ResponseEntity
+				.ok()
+				.body(new Board(boardSnapshot, userSnapshots));
 	}
 
 	@ApiOperation(
@@ -86,6 +124,7 @@ public class BoardApi {
 	@ApiResponses({
 		@ApiResponse(code = 201, message = "Board created"),
 		@ApiResponse(code = 400, message = "Given input was invalid")})
+	@JsonView(View.Summary.class)
 	@RequestMapping(
 		method = POST, 
 		consumes = MediaType.APPLICATION_JSON_VALUE)
@@ -97,5 +136,23 @@ public class BoardApi {
 				.status(CREATED)
 				.body(new Board(boardSnapshot));
 	}
+	
+	@ApiOperation(
+		value = "Invite user as board member",
+		notes = "Returns empty body")
+	@ApiResponses({
+		@ApiResponse(code = 201, message = "User invited"),
+		@ApiResponse(code = 400, message = "Given input was invalid")})
+	@RequestMapping(
+		value = "/inviteUser",
+		method = POST, 
+		consumes = MediaType.APPLICATION_JSON_VALUE)
+	public HttpEntity<Void> inviteUser(@Valid @RequestBody UserInvitation userInvitation) {
+		UserSnapshot userSnapshot = userSnapshotFinder.findByLogin(userInvitation.getLogin());
+		boardBO.addMember(userInvitation.getBoardId(), userSnapshot.getId(), Permissions.NORMAL);
+		
+		return new ResponseEntity<>(HttpStatus.OK);
+	}
+	
 
 }

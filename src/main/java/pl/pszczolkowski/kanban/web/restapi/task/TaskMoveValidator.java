@@ -43,9 +43,8 @@ public class TaskMoveValidator extends AbstractValidator {
 			return;
 		}
 		
-		Long loggedUserId = LoggedUserService.getSnapshot().getId();
-		BoardSnapshot boardSnapshot = boardSnapshotFinder.findByIdAndOwnerId(taskSnapshot.getBoardId(), loggedUserId);
-		if (boardSnapshot == null) {
+		BoardSnapshot boardSnapshot = boardSnapshotFinder.findById(taskSnapshot.getBoardId());
+		if (boardSnapshot == null || loggedUserIsNotBoardMember(boardSnapshot)) {
 			errors.rejectValue("taskId", "TaskWithGivenIdDoesNotExist");
 			return;
 		}
@@ -71,6 +70,15 @@ public class TaskMoveValidator extends AbstractValidator {
 		}
 		
 		
+	}
+
+	private boolean loggedUserIsNotBoardMember(BoardSnapshot boardSnapshot) {
+		Long loggedUserId = LoggedUserService.getSnapshot().getId();
+		
+		return boardSnapshot
+				.getMembers()
+				.stream()
+				.noneMatch(m -> m.getUserId() == loggedUserId);
 	}
 	
 }

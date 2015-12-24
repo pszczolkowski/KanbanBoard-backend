@@ -70,6 +70,13 @@ public class TaskApi {
 		binder.setValidator(taskMoveValidator);
 	}
 	
+	private boolean userIsBoardMember(long loggedUserId, BoardSnapshot boardSnapshot) {
+		return boardSnapshot
+			.getMembers()
+			.stream()
+			.anyMatch(m -> m.getUserId() == loggedUserId);
+	}
+	
 	@ApiOperation(
 		value = "Get task by id",
 		notes = "Returns task with given id")
@@ -86,7 +93,8 @@ public class TaskApi {
 		}
 		
 		BoardSnapshot boardSnapshot = boardSnapshotFinder.findById(taskSnapshot.getBoardId());
-		if (boardSnapshot.getOwnerId() != LoggedUserService.getSnapshot().getId()) {
+		long loggedUserId = LoggedUserService.getSnapshot().getId();
+		if (!userIsBoardMember(loggedUserId , boardSnapshot)) {
 			return new ResponseEntity<>(HttpStatus.NOT_FOUND);
 		}
 		

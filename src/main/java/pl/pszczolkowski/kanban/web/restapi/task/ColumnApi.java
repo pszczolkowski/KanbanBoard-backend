@@ -55,6 +55,13 @@ public class ColumnApi {
 		binder.setValidator(columnNewValidator);
 	}
 	
+	private boolean userIsBoardMember(long loggedUserId, BoardSnapshot boardSnapshot) {
+		return boardSnapshot
+			.getMembers()
+			.stream()
+			.anyMatch(m -> m.getUserId() == loggedUserId);
+	}
+	
 	@ApiOperation(
 		value = "Get all columns of the board",
 		notes = "Returns all columns of board")
@@ -71,7 +78,7 @@ public class ColumnApi {
 		}
 			
 		Long loggedUserId = LoggedUserService.getSnapshot().getId();
-		if (boardSnapshot.getOwnerId() != loggedUserId) {
+		if (!userIsBoardMember(loggedUserId, boardSnapshot)) {
 			return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
 		}
 		
@@ -102,7 +109,8 @@ public class ColumnApi {
 		}
 		
 		BoardSnapshot boardSnapshot = boardSnapshotFinder.findById(columnSnapshot.getBoardId());
-		if (boardSnapshot.getOwnerId() != LoggedUserService.getSnapshot().getId()) {
+		Long loggedUserId = LoggedUserService.getSnapshot().getId();
+		if (!userIsBoardMember(loggedUserId, boardSnapshot)) {
 			return new ResponseEntity<>(HttpStatus.NOT_FOUND);
 		}
 		
