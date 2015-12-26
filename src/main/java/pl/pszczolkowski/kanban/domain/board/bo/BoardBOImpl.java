@@ -56,4 +56,12 @@ public class BoardBOImpl implements BoardBO {
 		}
 	}
 
+	@Override
+	public void setPermissions(Long boardId, Long memberId, Permissions permissions) {
+		BoardMember boardMember = boardMemberRepository.findByIdAndBoardId(memberId, boardId);
+		
+		boardMember.setPermissions(permissions);
+		boardMemberRepository.save(boardMember);
+	}
+
 }

@@ -61,5 +61,9 @@ public class BoardMember {
 	long getUserId() {
 		return userId;
 	}
+
+	public void setPermissions(Permissions permissions) {
+		this.permissions = permissions;
+	}
 	
 }

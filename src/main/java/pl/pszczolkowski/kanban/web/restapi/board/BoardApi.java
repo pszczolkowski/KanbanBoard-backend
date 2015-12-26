@@ -49,19 +49,27 @@ public class BoardApi {
 	private final BoardSnapshotFinder boardSnapshotFinder;
 	private final UserSnapshotFinder userSnapshotFinder;
 	private final Validator userInvitationValidator;
+	private final Validator userPermissionsValidator;
 	
 	@Autowired
 	public BoardApi(BoardBO boardBO, BoardSnapshotFinder boardSnapshotFinder, UserSnapshotFinder userSnapshotFinder,
-			@Qualifier("userInvitationValidator") Validator userInvitationValidator) {
+			@Qualifier("userInvitationValidator") Validator userInvitationValidator,
+			@Qualifier("userPermissionsValidator") Validator userPermissionsValidator) {
 		this.boardBO = boardBO;
 		this.boardSnapshotFinder = boardSnapshotFinder;
 		this.userSnapshotFinder = userSnapshotFinder;
 		this.userInvitationValidator = userInvitationValidator;
+		this.userPermissionsValidator = userPermissionsValidator;
 	}
 
 	@InitBinder("userInvitation")
-	protected void initNewBinder(WebDataBinder binder) {
+	protected void initInvitationBinder(WebDataBinder binder) {
 		binder.setValidator(userInvitationValidator);
+	}
+	
+	@InitBinder("userPermissions")
+	protected void initPermissionsBinder(WebDataBinder binder) {
+		binder.setValidator(userPermissionsValidator);
 	}
 	
 	@ApiOperation(
@@ -193,6 +201,21 @@ public class BoardApi {
 				.findFirst();
 		
 		return member.isPresent() && member.get().getPermissions() == ADMIN;
+	}
+	
+	@ApiOperation(
+		value = "Set board member permissions",
+		notes = "Returns empty body")
+	@ApiResponses({
+		@ApiResponse(code = 201, message = "Permissions set"),
+		@ApiResponse(code = 400, message = "Given input was invalid")})
+	@RequestMapping(
+		value = "/member/permissions",
+		method = POST, 
+		consumes = MediaType.APPLICATION_JSON_VALUE)
+	public HttpEntity<Void> setPermissions(@Valid @RequestBody UserPermissions userPermissions) {
+		boardBO.setPermissions(userPermissions.getBoardId(), userPermissions.getMemberId(), userPermissions.getPermissions().toDomain());
+		return new ResponseEntity<>(HttpStatus.OK);
 	}
 
 }

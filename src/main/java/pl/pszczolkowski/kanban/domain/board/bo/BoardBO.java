@@ -11,5 +11,7 @@ public interface BoardBO {
 	BoardMemberSnapshot addMember(long boardId, long userId, Permissions permissions);
 
 	void removeMember(long boardId, long userId);
+
+	void setPermissions(Long boardId, Long memberId, Permissions permissions);
 	
 }
