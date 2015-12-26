@@ -4,9 +4,11 @@ import static java.util.stream.Collectors.toList;
 import static org.springframework.http.HttpStatus.CREATED;
 import static org.springframework.web.bind.annotation.RequestMethod.GET;
 import static org.springframework.web.bind.annotation.RequestMethod.POST;
+import static pl.pszczolkowski.kanban.domain.board.entity.Permissions.ADMIN;
 
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 
 import javax.validation.Valid;
 
@@ -22,6 +24,7 @@ import org.springframework.web.bind.annotation.InitBinder;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.fasterxml.jackson.annotation.JsonView;
@@ -154,5 +157,42 @@ public class BoardApi {
 		return new ResponseEntity<>(HttpStatus.OK);
 	}
 	
+	@ApiOperation(
+		value = "Remove board member",
+		notes = "Returns empty body")
+	@ApiResponses({
+		@ApiResponse(code = 201, message = "Member removed"),
+		@ApiResponse(code = 400, message = "Given input was invalid"),
+		@ApiResponse(code = 403, message = "Logged user is not board member")})
+	@RequestMapping(
+		value = "/{boardId}/member/{userId}",
+		method = RequestMethod.DELETE)
+	public HttpEntity<Void> removeMember(@PathVariable("boardId") long boardId, @PathVariable("userId") long userId) {
+		BoardSnapshot boardSnapshot = boardSnapshotFinder.findById(boardId);
+		if (boardSnapshot == null) {
+			return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
+		} 
+		
+		long loggedUserId = LoggedUserService.getSnapshot().getId();
+		if (loggedUserId == userId) {
+			return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
+		} else if (!loggedUserIsBoardAdmin(loggedUserId, boardSnapshot)) {
+			return new ResponseEntity<>(HttpStatus.FORBIDDEN);
+		}
+		
+		boardBO.removeMember(boardSnapshot.getId(), userId);
+		
+		return new ResponseEntity<>(HttpStatus.OK);
+	}
+
+	private boolean loggedUserIsBoardAdmin(long loggedUserId, BoardSnapshot boardSnapshot) {
+		Optional<BoardMemberSnapshot> member = boardSnapshot
+				.getMembers()
+				.stream()
+				.filter(m -> m.getUserId() == loggedUserId)
+				.findFirst();
+		
+		return member.isPresent() && member.get().getPermissions() == ADMIN;
+	}
 
 }

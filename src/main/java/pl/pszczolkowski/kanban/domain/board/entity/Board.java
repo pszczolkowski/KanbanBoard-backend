@@ -8,6 +8,7 @@ import static javax.persistence.GenerationType.AUTO;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
@@ -65,6 +66,10 @@ public class Board {
 	}
 	
 	public BoardMember addMember(long userId, Permissions permissions) {
+		if (indexOfMember(userId).isPresent()) {
+			throw new IllegalArgumentException("User with id <" + userId + "> is already board member");
+		}
+		
 		BoardMember boardMember = new BoardMember(this, userId, permissions);
 		this.members.add(boardMember);
 		
@@ -73,6 +78,25 @@ public class Board {
 
 	long getId() {
 		return id;
+	}
+
+	public void removeMember(long userId) {
+		Optional<Integer> position = indexOfMember(userId);
+		if (position.isPresent()) {
+			members.remove(position.get().intValue());
+		}
+	}
+
+	private Optional<Integer> indexOfMember(long userId) {
+		Integer position = null;
+		for (int i = 0; i < members.size(); i++) {
+			if (members.get(i).getUserId() == userId) {
+				position = i;
+				break;
+			}
+		}
+		
+		return Optional.ofNullable(position);
 	}
 
 }

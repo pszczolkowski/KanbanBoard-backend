@@ -46,4 +46,14 @@ public class BoardBOImpl implements BoardBO {
 		return boardMember.toSnapshot();
 	}
 
+	@Override
+	public void removeMember(long boardId, long userId) {
+		Board board = boardRepository.findOne(boardId);
+		
+		if (board != null) {
+			board.removeMember(userId);
+			boardRepository.save(board);
+		}
+	}
+
 }

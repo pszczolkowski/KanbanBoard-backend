@@ -9,5 +9,7 @@ public interface BoardBO {
 	BoardSnapshot create(String name, long authorId);
 	
 	BoardMemberSnapshot addMember(long boardId, long userId, Permissions permissions);
+
+	void removeMember(long boardId, long userId);
 	
 }

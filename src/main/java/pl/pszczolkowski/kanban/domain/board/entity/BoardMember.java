@@ -57,5 +57,9 @@ public class BoardMember {
 		
 		return new BoardMemberSnapshot(id, userId, permissions, board.getId());
 	}
+
+	long getUserId() {
+		return userId;
+	}
 	
 }
