@@ -35,7 +35,7 @@ public class Column {
 	private Long id;
 	
 	@NotEmpty
-	@Size(max = 20)
+	@Size(max = 30)
 	private String name;
 	
 	@NotNull
@@ -90,7 +90,7 @@ public class Column {
 		return boardId;
 	}
 
-	public long getId() {
+	public Long getId() {
 		return id;
 	}
 
