@@ -4,6 +4,7 @@ import static java.util.stream.Collectors.toList;
 import static org.springframework.http.HttpStatus.CREATED;
 import static org.springframework.web.bind.annotation.RequestMethod.GET;
 import static org.springframework.web.bind.annotation.RequestMethod.POST;
+import static org.springframework.web.bind.annotation.RequestMethod.PUT;
 
 import java.util.List;
 
@@ -43,16 +44,19 @@ public class ColumnApi {
 	private final BoardSnapshotFinder boardSnapshotFinder;
 	private final Validator columnNewValidator;
 	private final Validator columnMoveValidator;
+	private final Validator columnUpdateValidator;
 
 	@Autowired
 	public ColumnApi(ColumnBO columnBO, ColumnSnapshotFinder columnSnapshotFinder, BoardSnapshotFinder boardSnapshotFinder, 
 			@Qualifier("columnNewValidator") Validator columnNewValidator,
-			@Qualifier("columnMoveValidator") Validator columnMoveValidator) {
+			@Qualifier("columnMoveValidator") Validator columnMoveValidator,
+			@Qualifier("columnUpdateValidator") Validator columnUpdateValidator) {
 		this.columnBO = columnBO;
 		this.columnSnapshotFinder = columnSnapshotFinder;
 		this.boardSnapshotFinder = boardSnapshotFinder;
 		this.columnNewValidator = columnNewValidator;
 		this.columnMoveValidator = columnMoveValidator;
+		this.columnUpdateValidator = columnUpdateValidator;
 	}
 	
 	@InitBinder("columnNew")
@@ -63,6 +67,11 @@ public class ColumnApi {
 	@InitBinder("columnMove")
 	protected void initMoveBinder(WebDataBinder binder) {
 		binder.setValidator(columnMoveValidator);
+	}
+	
+	@InitBinder("columnUpdate")
+	protected void initUpdateBinder(WebDataBinder binder) {
+		binder.setValidator(columnUpdateValidator);
 	}
 	
 	private boolean userIsBoardMember(long loggedUserId, BoardSnapshot boardSnapshot) {
@@ -143,6 +152,20 @@ public class ColumnApi {
 		return ResponseEntity
 				.status(CREATED)
 				.body(new Column(columnSnapshot));
+	}
+	
+	@ApiOperation(
+		value = "Update column properties",
+		notes = "Returns empty body")
+	@ApiResponses({
+		@ApiResponse(code = 200, message = "Column updated"),
+		@ApiResponse(code = 400, message = "Given input was invalid")})
+	@RequestMapping(
+		method = PUT, 
+		consumes = MediaType.APPLICATION_JSON_VALUE)
+	public HttpEntity<Void> update(@Valid @RequestBody ColumnUpdate columnUpdate) {
+		columnBO.edit(columnUpdate.getId(), columnUpdate.getName(), columnUpdate.getWorkInProgressLimit());
+		return new ResponseEntity<>(HttpStatus.OK);
 	}
 	
 	@ApiOperation(

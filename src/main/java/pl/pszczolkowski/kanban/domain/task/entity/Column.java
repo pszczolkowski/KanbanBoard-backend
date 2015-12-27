@@ -147,5 +147,10 @@ public class Column {
 	public List<Task> getTasks() {
 		return new ArrayList<>(tasks);
 	}
+
+	public void edit(String name, Integer workInProgressLimit) {
+		this.name = name;
+		this.workInProgressLimit = workInProgressLimit;
+	}
 	
 }

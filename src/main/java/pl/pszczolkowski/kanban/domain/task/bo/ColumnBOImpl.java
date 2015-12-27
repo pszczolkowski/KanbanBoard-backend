@@ -1,6 +1,7 @@
 package pl.pszczolkowski.kanban.domain.task.bo;
 
 import java.util.List;
+import java.util.Objects;
 import java.util.Optional;
 
 import org.slf4j.Logger;
@@ -94,6 +95,18 @@ public class ColumnBOImpl implements ColumnBO {
 		}
 		
 		columnRepository.delete(column);;
+	}
+
+	@Override
+	public void edit(Long columnId, String name, Integer workInProgressLimit) {
+		Column column = columnRepository.findOne(columnId);
+		ColumnSnapshot columnSnapshot = column.toSnapshot();
+		
+		if (!columnSnapshot.getName().equals(name) ||
+				!Objects.equals(columnSnapshot.getWorkInProgressLimit(), workInProgressLimit)) {
+			column.edit(name, workInProgressLimit);
+			columnRepository.save(column);
+		}
 	}
 
 }

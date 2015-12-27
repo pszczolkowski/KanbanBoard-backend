@@ -9,5 +9,7 @@ public interface ColumnBO {
 	void move(long columnId, int position);
 
 	void delete(Long columnId, Long columnToMoveTasksId);
+
+	void edit(Long columnId, String name, Integer workInProgressLimit);
 	
 }
