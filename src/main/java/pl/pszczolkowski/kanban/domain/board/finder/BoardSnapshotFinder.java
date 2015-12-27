@@ -6,12 +6,10 @@ import pl.pszczolkowski.kanban.domain.board.snapshot.BoardSnapshot;
 
 public interface BoardSnapshotFinder {
 
-	List<BoardSnapshot> findByOwnerId(long ownerId);
+	List<BoardSnapshot> findByMemberId(long memberId);
 	
 	BoardSnapshot findById(long boardId);
 
-	BoardSnapshot findByIdAndOwnerId(long boardId, Long ownerId);
-
-	List<BoardSnapshot> findByNameAndOWnerId(String name, Long id);
+	List<BoardSnapshot> findByNameAndMemberId(String name, long memberId);
 
 }

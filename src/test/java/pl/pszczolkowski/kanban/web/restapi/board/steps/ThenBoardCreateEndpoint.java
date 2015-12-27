@@ -24,11 +24,10 @@ public class ThenBoardCreateEndpoint extends ThenStage<ThenBoardCreateEndpoint> 
 	private BoardSnapshotFinder boardSnapshotFinder;
 	
  	public ThenBoardCreateEndpoint board_should_be_created() {
-		List<BoardSnapshot> boardSnapshots =  boardSnapshotFinder.findByNameAndOWnerId(boardNew.getName(), getLoggedUser().getId());
+		List<BoardSnapshot> boardSnapshots =  boardSnapshotFinder.findByNameAndMemberId(boardNew.getName(), getLoggedUser().getId());
 		BoardSnapshot createdBoardSnapshot = boardSnapshots.get(0);
 		
 		assertThat(createdBoardSnapshot.getName(), is(equalTo(boardNew.getName())));
-		assertThat(createdBoardSnapshot.getOwnerId(), is(equalTo(getLoggedUser().getId())));
 		
 		return this;
 	}

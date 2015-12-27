@@ -18,7 +18,7 @@ public class GivenBoardGetEndpoint extends GivenStage<GivenBoardGetEndpoint> {
 	
 	public GivenBoardGetEndpoint a_board_for_logged_user() {
 		boardSnapshot = aBoard()
-			.withOwnerId(getLoggedUser().getId())
+			.withAuthorId(getLoggedUser().getId())
 			.build();
 		
 		return this;

@@ -24,11 +24,11 @@ public class GivenBoardListEndpoint extends GivenStage<GivenBoardListEndpoint> {
 		
 		boardSnapshots.add(
 			aBoard()
-				.withOwnerId(loggedUserId)
+				.withAuthorId(loggedUserId)
 				.build());
 		boardSnapshots.add(
 			aBoard()
-				.withOwnerId(loggedUserId)
+				.withAuthorId(loggedUserId)
 				.build());
 		
 		aBoard().build();

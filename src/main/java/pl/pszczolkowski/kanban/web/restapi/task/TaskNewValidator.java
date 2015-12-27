@@ -45,8 +45,8 @@ public class TaskNewValidator extends AbstractValidator {
 			return;
 		}
 		
-		BoardSnapshot boardSnapshot = boardSnapshotFinder.findByIdAndOwnerId(columnSnapshot.getBoardId(), LoggedUserService.getSnapshot().getId());
-		if (boardSnapshot == null) {
+		BoardSnapshot boardSnapshot = boardSnapshotFinder.findById(columnSnapshot.getBoardId());
+		if (boardSnapshot == null || loggedUserIsNotBoardMember(boardSnapshot)) {
 			errors.rejectValue("columnId", "ColumnWithGivenIdDoesntExist");
 			return;
 		}
@@ -60,6 +60,15 @@ public class TaskNewValidator extends AbstractValidator {
 			errors.rejectValue("labelId", "LabelWithGivenIdDoesNotExist");
 			return;
 		}
+	}
+
+	private boolean loggedUserIsNotBoardMember(BoardSnapshot boardSnapshot) {
+		Long loggedUserId = LoggedUserService.getSnapshot().getId();
+		
+		return boardSnapshot
+				.getMembers()
+				.stream()
+				.noneMatch(m -> m.getUserId() == loggedUserId);
 	}
 	
 }

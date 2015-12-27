@@ -31,16 +31,14 @@ public class ColumnNewValidator extends AbstractValidator {
 	@Override
 	public void customValidation(Object target, Errors errors) {
 		ColumnNew columnNew = (ColumnNew) target;
-		Long loggedUserId = LoggedUserService.getSnapshot().getId();
 		
-		BoardSnapshot boardSnapshot = boardSnapshotFinder.findByIdAndOwnerId(columnNew.getBoardId(), loggedUserId);
+		BoardSnapshot boardSnapshot = boardSnapshotFinder.findById(columnNew.getBoardId());
 		if (boardSnapshot == null) {
 			errors.rejectValue("boardId", "BoardWithGivenIdDoesntExist");
 			return;
 		}
 		
-		if (boardSnapshot.getOwnerId() != loggedUserId) {
-			// user has no rights to access given board
+		if (userIsNotBoardMember(boardSnapshot)) {
 			errors.rejectValue("boardId", "BoardWithGivenIdDoesntExist");
 		}
 		
@@ -49,6 +47,15 @@ public class ColumnNewValidator extends AbstractValidator {
 		if (columnSnapshot != null) {
 			errors.rejectValue("name", "ColumnWithGivenNameAlreadyExistsInTheBoard");
 		}
+	}
+	
+	private boolean userIsNotBoardMember(BoardSnapshot boardSnapshot) {
+		Long loggedUserId = LoggedUserService.getSnapshot().getId();
+		
+		return boardSnapshot
+			.getMembers()
+			.stream()
+			.noneMatch(m -> m.getUserId() == loggedUserId);
 	}
 	
 }

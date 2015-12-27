@@ -1,5 +1,10 @@
 package pl.pszczolkowski.kanban.domain.user.finder;
 
+import java.util.Collection;
+import java.util.Map;
+import java.util.function.Function;
+import java.util.stream.Collectors;
+
 import org.springframework.beans.factory.annotation.Autowired;
 
 import pl.pszczolkowski.kanban.domain.user.entity.User;
@@ -27,6 +32,15 @@ public class UserSnapshotFinderImpl implements UserSnapshotFinder {
 	public UserSnapshot findByLogin(String login) {
 		User user = userRepository.findOneByLoginIgnoreCase(login);
 		return user == null ? null : user.toSnapshot();
+	}
+
+	@Override
+	public Map<Long, UserSnapshot> findAllAsMap(Collection<Long> memberIds) {
+		return userRepository
+			.findAll(memberIds)
+			.stream()
+			.map(User::toSnapshot)
+			.collect(Collectors.toMap(user -> user.getId(), Function.identity()));
 	}
 
 }

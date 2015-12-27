@@ -21,15 +21,15 @@ public class BoardBuilder implements ApplicationContextAware {
 	private static BoardRepository boardRepository;
 	
 	private String name = CLAZZ + RANDOM.nextInt();
-	private long ownerId = Long.MAX_VALUE;
+	private long authorId = Long.MAX_VALUE;
 	
 	public BoardBuilder withName(String name) {
 		this.name = name;
 		return this;
 	}
 	
-	public BoardBuilder withOwnerId(long ownerId) {
-		this.ownerId = ownerId;
+	public BoardBuilder withAuthorId(long authorId) {
+		this.authorId = authorId;
 		return this;
 	}
 	
@@ -38,7 +38,7 @@ public class BoardBuilder implements ApplicationContextAware {
 			throw new IllegalStateException("Required BoardRepository dependency has not been initialized yet");
 		}
 		
-		Board board = new Board(name, ownerId);
+		Board board = new Board(name, authorId);
 		board = boardRepository.save(board);
 		
 		return board.toSnapshot();
