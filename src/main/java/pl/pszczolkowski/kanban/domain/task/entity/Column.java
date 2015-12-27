@@ -90,7 +90,7 @@ public class Column {
 		return boardId;
 	}
 
-	long getId() {
+	public long getId() {
 		return id;
 	}
 
@@ -137,6 +137,10 @@ public class Column {
 		if (taskPosition.isPresent()) {
 			tasks.remove(taskPosition.get().intValue());
 		}
+	}
+
+	public void setPosition(int position) {
+		this.position = position;
 	}
 	
 }

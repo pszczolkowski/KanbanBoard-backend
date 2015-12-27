@@ -1,4 +1,4 @@
-package pl.pszczolkowski.kanban.web.restapi.task;
+package pl.pszczolkowski.kanban.web.restapi.column;
 
 import javax.validation.constraints.Min;
 import javax.validation.constraints.NotNull;

@@ -1,5 +1,6 @@
 package pl.pszczolkowski.kanban.domain.task.bo;
 
+import java.util.List;
 import java.util.Optional;
 
 import org.slf4j.Logger;
@@ -44,6 +45,32 @@ public class ColumnBOImpl implements ColumnBO {
 	private boolean columnAlreadyExists(long boardId, String name) {
 		return columnRepository.findByBoardIdAndName(boardId, name) != null;
 	}
-	
+
+	@Override
+	public void move(long columnId, int position) {
+		Column column = columnRepository.findOne(columnId);
+		List<Column> columns = columnRepository.findByBoardIdOrderByPosition(column.toSnapshot().getBoardId());
+		
+		if (position >= columns.size()) {
+			throw new IllegalArgumentException("Invalid position");
+		}
+		
+		int index = -1;
+		for (int i = 0; i < columns.size(); i++) {
+			if (columns.get(i).getId() == column.getId()) {
+				index = i;
+				break;
+			}
+		}
+		
+		column = columns.remove(index);
+		columns.add(position, column);
+		
+		for (int j = 0; j < columns.size(); j++) {
+			columns.get(j).setPosition(j);
+		}
+		
+		columnRepository.save(columns);
+	}
 
 }

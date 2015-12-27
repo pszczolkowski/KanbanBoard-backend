@@ -10,8 +10,8 @@ import com.tngtech.jgiven.annotation.ExpectedScenarioState;
 import pl.pszczolkowski.kanban.domain.board.snapshot.BoardSnapshot;
 import pl.pszczolkowski.kanban.domain.task.finder.ColumnSnapshotFinder;
 import pl.pszczolkowski.kanban.domain.task.snapshot.ColumnSnapshot;
+import pl.pszczolkowski.kanban.web.restapi.column.ColumnNew;
 import pl.pszczolkowski.kanban.web.restapi.shared.ThenStage;
-import pl.pszczolkowski.kanban.web.restapi.task.ColumnNew;
 
 public class ThenColumnAddEndpoint extends ThenStage<ThenColumnAddEndpoint> {
 

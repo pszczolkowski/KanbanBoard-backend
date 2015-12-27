@@ -1,4 +1,4 @@
-package pl.pszczolkowski.kanban.web.restapi.task;
+package pl.pszczolkowski.kanban.web.restapi.column;
 
 import static java.util.stream.Collectors.toList;
 import static org.springframework.http.HttpStatus.CREATED;
@@ -10,6 +10,7 @@ import java.util.List;
 import javax.validation.Valid;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
@@ -41,18 +42,27 @@ public class ColumnApi {
 	private final ColumnSnapshotFinder columnSnapshotFinder;
 	private final BoardSnapshotFinder boardSnapshotFinder;
 	private final Validator columnNewValidator;
+	private final Validator columnMoveValidator;
 
 	@Autowired
-	public ColumnApi(ColumnBO columnBO, ColumnSnapshotFinder columnSnapshotFinder, BoardSnapshotFinder boardSnapshotFinder, Validator columnNewValidator) {
+	public ColumnApi(ColumnBO columnBO, ColumnSnapshotFinder columnSnapshotFinder, BoardSnapshotFinder boardSnapshotFinder, 
+			@Qualifier("columnNewValidator") Validator columnNewValidator,
+			@Qualifier("columnMoveValidator") Validator columnMoveValidator) {
 		this.columnBO = columnBO;
 		this.columnSnapshotFinder = columnSnapshotFinder;
 		this.boardSnapshotFinder = boardSnapshotFinder;
 		this.columnNewValidator = columnNewValidator;
+		this.columnMoveValidator = columnMoveValidator;
 	}
 	
 	@InitBinder("columnNew")
 	protected void initNewBinder(WebDataBinder binder) {
 		binder.setValidator(columnNewValidator);
+	}
+	
+	@InitBinder("columnMove")
+	protected void initMoveBinder(WebDataBinder binder) {
+		binder.setValidator(columnMoveValidator);
 	}
 	
 	private boolean userIsBoardMember(long loggedUserId, BoardSnapshot boardSnapshot) {
@@ -133,6 +143,21 @@ public class ColumnApi {
 		return ResponseEntity
 				.status(CREATED)
 				.body(new Column(columnSnapshot));
+	}
+	
+	@ApiOperation(
+		value = "Move column",
+		notes = "Returns empty body")
+	@ApiResponses({
+		@ApiResponse(code = 200, message = "Column moved"),
+		@ApiResponse(code = 400, message = "Given input was invalid")})
+	@RequestMapping(
+		value = "/move",
+		method = POST, 
+		consumes = MediaType.APPLICATION_JSON_VALUE)
+	public HttpEntity<Void> move(@Valid @RequestBody ColumnMove columnMove) {
+		columnBO.move(columnMove.getColumnId(), columnMove.getPosition());
+		return new ResponseEntity<>(HttpStatus.OK);
 	}
 	
 }

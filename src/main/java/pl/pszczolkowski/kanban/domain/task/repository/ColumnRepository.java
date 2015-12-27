@@ -17,5 +17,7 @@ public interface ColumnRepository extends JpaRepository<Column, Long> {
 	Optional<Integer> findMaxPositionOnBoard(@Param("boardId") long boardId);
 
 	List<Column> findByBoardId(long boardId);
-	
+
+	List<Column> findByBoardIdOrderByPosition(long boardId);
+
 }

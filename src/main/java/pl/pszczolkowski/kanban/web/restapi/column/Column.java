@@ -1,4 +1,4 @@
-package pl.pszczolkowski.kanban.web.restapi.task;
+package pl.pszczolkowski.kanban.web.restapi.column;
 
 import static java.util.stream.Collectors.toList;
 
