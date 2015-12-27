@@ -23,7 +23,7 @@ public class ColumnSnapshotFinderImpl implements ColumnSnapshotFinder {
 
 	@Override
 	public List<ColumnSnapshot> findByBoardId(long boardId) {
-		List<Column> columns = columnRepository.findByBoardId(boardId);
+		List<Column> columns = columnRepository.findByBoardIdOrderByPosition(boardId);
 		return snapshotsFrom(columns);
 	}
 

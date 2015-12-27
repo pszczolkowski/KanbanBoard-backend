@@ -1,4 +1,4 @@
-package pl.pszczolkowski.kanban.web.restapi.task;
+package pl.pszczolkowski.kanban.web.restapi.column;
 
 import static java.util.stream.Collectors.toList;
 
@@ -15,7 +15,7 @@ public class Column {
 	private final String name;
 	private final long boardId;
 	private final int position;
-	private final int workInProgressLimit;
+	private final Integer workInProgressLimit;
 	private final List<Task> tasks;
 	
 	public Column(ColumnSnapshot columnSnapshot) {
@@ -52,7 +52,7 @@ public class Column {
 	}
 
 	@ApiModelProperty("Work in progress limit for column")
-	public int getWorkInProgressLimit() {
+	public Integer getWorkInProgressLimit() {
 		return workInProgressLimit;
 	}
 	

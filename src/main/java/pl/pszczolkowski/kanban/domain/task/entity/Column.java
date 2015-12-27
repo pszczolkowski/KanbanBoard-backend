@@ -35,7 +35,7 @@ public class Column {
 	private Long id;
 	
 	@NotEmpty
-	@Size(max = 20)
+	@Size(max = 30)
 	private String name;
 	
 	@NotNull
@@ -46,8 +46,8 @@ public class Column {
 	@Min(0)
 	private int position;
 	
-	@Min(0)
-	private int workInProgressLimit;
+	@Min(1)
+	private Integer workInProgressLimit;
 	
 	@Version
 	private long version;
@@ -58,7 +58,7 @@ public class Column {
 	
 	protected Column() {}
 	
-	public Column(long boardId, String name, int position, int workInProgressLimit) {
+	public Column(long boardId, String name, int position, Integer workInProgressLimit) {
 		this.boardId = boardId;
 		this.name = name;
 		this.position = position;
@@ -78,10 +78,6 @@ public class Column {
 		return new ColumnSnapshot(id, name, boardId, position, workInProgressLimit, taskSnapshots);
 	}
 	
-	public void addTask(Task task) {
-		this.tasks.add(task);
-	}
-
 	int countTasks() {
 		return tasks.size();
 	}
@@ -90,7 +86,7 @@ public class Column {
 		return boardId;
 	}
 
-	long getId() {
+	public Long getId() {
 		return id;
 	}
 
@@ -109,6 +105,7 @@ public class Column {
 
 	private void insertTask(Task task, int position) {
 		tasks.add(position, task);
+		task.moveTo(this);
 		for (int i = 0; i < tasks.size(); i++) {
 			tasks.get(i).setPosition(i);
 		}
@@ -122,6 +119,10 @@ public class Column {
 		
 		Task task = tasks.remove(taskPosition.get().intValue());
 		insertTask(task, position);
+	}
+	
+	public void addTask(Task task) {
+		insertTask(task, tasks.size());
 	}
 
 	public void addTask(Task task, int position) {
@@ -137,6 +138,19 @@ public class Column {
 		if (taskPosition.isPresent()) {
 			tasks.remove(taskPosition.get().intValue());
 		}
+	}
+
+	public void setPosition(int position) {
+		this.position = position;
+	}
+
+	public List<Task> getTasks() {
+		return new ArrayList<>(tasks);
+	}
+
+	public void edit(String name, Integer workInProgressLimit) {
+		this.name = name;
+		this.workInProgressLimit = workInProgressLimit;
 	}
 	
 }
