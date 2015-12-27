@@ -18,10 +18,10 @@ public class ColumnNew {
 	
 	@NotNull
 	@Min(0)
-	private long boardId;
+	private Long boardId;
 	
-	@Min(0)
-	private int workInProgressLimit;
+	@Min(1)
+	private Integer workInProgressLimit;
 	
 	@ApiModelProperty(
 		value = "Name for column",
@@ -37,22 +37,22 @@ public class ColumnNew {
 	@ApiModelProperty(
 		value = "Unique identifier of board that column should be assigned to",
 		required = true)
-	public long getBoardId() {
+	public Long getBoardId() {
 		return boardId;
 	}
 	
-	public void setBoardId(long boardId) {
+	public void setBoardId(Long boardId) {
 		this.boardId = boardId;
 	}
 
 	@ApiModelProperty(
 		value = "Work in progress limit for the column",
 		required = false)
-	public int getWorkInProgressLimit() {
+	public Integer getWorkInProgressLimit() {
 		return workInProgressLimit;
 	}
 
-	public void setWorkInProgressLimit(int workInProgressLimit) {
+	public void setWorkInProgressLimit(Integer workInProgressLimit) {
 		this.workInProgressLimit = workInProgressLimit;
 	}
 	

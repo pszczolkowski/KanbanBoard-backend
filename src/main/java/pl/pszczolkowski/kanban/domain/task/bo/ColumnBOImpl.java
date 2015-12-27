@@ -26,7 +26,7 @@ public class ColumnBOImpl implements ColumnBO {
 	}
 
 	@Override
-	public ColumnSnapshot add(long boardId, String name, int workInProgressLimit) {
+	public ColumnSnapshot add(long boardId, String name, Integer workInProgressLimit) {
 		if (columnAlreadyExists(boardId, name)) {
 			throw new IllegalArgumentException("Column with name <" + name + "> already exist in board with id <" + boardId + ">");
 		}

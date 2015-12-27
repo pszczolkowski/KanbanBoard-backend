@@ -46,8 +46,8 @@ public class Column {
 	@Min(0)
 	private int position;
 	
-	@Min(0)
-	private int workInProgressLimit;
+	@Min(1)
+	private Integer workInProgressLimit;
 	
 	@Version
 	private long version;
@@ -58,7 +58,7 @@ public class Column {
 	
 	protected Column() {}
 	
-	public Column(long boardId, String name, int position, int workInProgressLimit) {
+	public Column(long boardId, String name, int position, Integer workInProgressLimit) {
 		this.boardId = boardId;
 		this.name = name;
 		this.position = position;

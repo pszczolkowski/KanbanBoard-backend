@@ -11,10 +11,10 @@ public class ColumnSnapshot {
 	private final String name;
 	private final long boardId;
 	private final int position;
-	private final int workInProgressLimit;
+	private final Integer workInProgressLimit;
 	private final List<TaskSnapshot> tasks = new ArrayList<>();
 	
-	public ColumnSnapshot(long id, String name, long boardId, int position, int workInProgressLimit, List<TaskSnapshot> tasks) {
+	public ColumnSnapshot(long id, String name, long boardId, int position, Integer workInProgressLimit, List<TaskSnapshot> tasks) {
 		this.id = id;
 		this.name = name;
 		this.boardId = boardId;
@@ -31,7 +31,7 @@ public class ColumnSnapshot {
 		return position;
 	}
 
-	public int getWorkInProgressLimit() {
+	public Integer getWorkInProgressLimit() {
 		return workInProgressLimit;
 	}
 
