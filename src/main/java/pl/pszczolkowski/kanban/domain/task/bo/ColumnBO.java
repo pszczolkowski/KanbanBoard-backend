@@ -7,5 +7,7 @@ public interface ColumnBO {
 	ColumnSnapshot add(long boardId, String name, int workInProgressLimit);
 
 	void move(long columnId, int position);
+
+	void delete(Long columnId, Long columnToMoveTasksId);
 	
 }

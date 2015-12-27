@@ -78,10 +78,6 @@ public class Column {
 		return new ColumnSnapshot(id, name, boardId, position, workInProgressLimit, taskSnapshots);
 	}
 	
-	public void addTask(Task task) {
-		this.tasks.add(task);
-	}
-
 	int countTasks() {
 		return tasks.size();
 	}
@@ -109,6 +105,7 @@ public class Column {
 
 	private void insertTask(Task task, int position) {
 		tasks.add(position, task);
+		task.moveTo(this);
 		for (int i = 0; i < tasks.size(); i++) {
 			tasks.get(i).setPosition(i);
 		}
@@ -122,6 +119,10 @@ public class Column {
 		
 		Task task = tasks.remove(taskPosition.get().intValue());
 		insertTask(task, position);
+	}
+	
+	public void addTask(Task task) {
+		insertTask(task, tasks.size());
 	}
 
 	public void addTask(Task task, int position) {
@@ -141,6 +142,10 @@ public class Column {
 
 	public void setPosition(int position) {
 		this.position = position;
+	}
+
+	public List<Task> getTasks() {
+		return new ArrayList<>(tasks);
 	}
 	
 }

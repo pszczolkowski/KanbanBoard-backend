@@ -8,6 +8,7 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 
 import pl.pszczolkowski.kanban.domain.task.entity.Column;
+import pl.pszczolkowski.kanban.domain.task.entity.Task;
 import pl.pszczolkowski.kanban.domain.task.repository.ColumnRepository;
 import pl.pszczolkowski.kanban.domain.task.snapshot.ColumnSnapshot;
 import pl.pszczolkowski.kanban.shared.annotations.BusinessObject;
@@ -71,6 +72,28 @@ public class ColumnBOImpl implements ColumnBO {
 		}
 		
 		columnRepository.save(columns);
+	}
+
+	@Override
+	public void delete(Long columnId, Long columnToMoveTasksId) {
+		Column column = columnRepository.findOne(columnId);
+		ColumnSnapshot columnSnapshot = column.toSnapshot();
+		if (columnSnapshot.getTasks().size() > 0) {
+			Column columnToMoveTasks = columnRepository.findOne(columnToMoveTasksId);
+			if (columnToMoveTasks.toSnapshot().getBoardId() != columnSnapshot.getBoardId()) {
+				throw new IllegalArgumentException("Column to move tasks has to be in the same board as the deleting one");
+			}
+			
+			for (Task task : column.getTasks()) {
+				column.removeTask(task);
+				columnToMoveTasks.addTask(task);
+			}
+
+			columnRepository.save(column);
+			columnRepository.save(columnToMoveTasks);
+		}
+		
+		columnRepository.delete(column);;
 	}
 
 }

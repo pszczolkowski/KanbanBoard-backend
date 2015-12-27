@@ -160,4 +160,19 @@ public class ColumnApi {
 		return new ResponseEntity<>(HttpStatus.OK);
 	}
 	
+	@ApiOperation(
+		value = "Delete column",
+		notes = "Returns empty body")
+	@ApiResponses({
+		@ApiResponse(code = 200, message = "Column delete"),
+		@ApiResponse(code = 400, message = "Given input was invalid")})
+	@RequestMapping(
+		value = "/delete",
+		method = POST, 
+		consumes = MediaType.APPLICATION_JSON_VALUE)
+	public HttpEntity<Void> delete(@Valid @RequestBody ColumnDelete columnDelete) {
+		columnBO.delete(columnDelete.getColumnId(), columnDelete.getColumnToMove());
+		return new ResponseEntity<>(HttpStatus.OK);
+	}
+	
 }
