@@ -13,5 +13,9 @@ public interface TaskBO {
 	void edit(Long id, String title, String description);
 
 	void detachLabelFromTasksInBoard(Long labelId);
+
+	void assignLabel(Long taskId, Long labelId);
+
+	void assignUser(Long taskId, Long assigneeId);
 	
 }

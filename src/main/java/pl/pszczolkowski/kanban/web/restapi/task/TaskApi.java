@@ -41,18 +41,24 @@ public class TaskApi {
 	private final Validator taskNewValidator;
 	private final Validator taskUpdateValidator;
 	private final Validator taskMoveValidator;
+	private final Validator labelAssignValidator;
+	private final Validator userAssignValidator;
 	
 	@Autowired
 	public TaskApi(TaskBO taskBO, TaskSnapshotFinder taskSnapshotFinder, BoardSnapshotFinder boardSnapshotFinder,  
 			@Qualifier("taskNewValidator") Validator taskNewValidator,
 			@Qualifier("taskUpdateValidator") Validator taskUpdateValidator,
-			@Qualifier("taskMoveValidator") Validator taskMoveValidator) {
+			@Qualifier("taskMoveValidator") Validator taskMoveValidator,
+			@Qualifier("labelAssignValidator") Validator labelAssignValidator,
+			@Qualifier("userAssignValidator") Validator userAssignValidator) {
 		this.taskBO = taskBO;
 		this.taskSnapshotFinder = taskSnapshotFinder;
 		this.boardSnapshotFinder = boardSnapshotFinder;
 		this.taskNewValidator = taskNewValidator;
 		this.taskUpdateValidator = taskUpdateValidator;
 		this.taskMoveValidator = taskMoveValidator;
+		this.labelAssignValidator = labelAssignValidator;
+		this.userAssignValidator = userAssignValidator;
 	}
 
 	@InitBinder("taskNew")
@@ -68,6 +74,16 @@ public class TaskApi {
 	@InitBinder("taskMove")
 	protected void initMoveBinder(WebDataBinder binder) {
 		binder.setValidator(taskMoveValidator);
+	}
+	
+	@InitBinder("labelAssign")
+	protected void initLabelAssignBinder(WebDataBinder binder) {
+		binder.setValidator(labelAssignValidator);
+	}
+	
+	@InitBinder("userAssign")
+	protected void initUserAssignBinder(WebDataBinder binder) {
+		binder.setValidator(userAssignValidator);
 	}
 	
 	private boolean userIsBoardMember(long loggedUserId, BoardSnapshot boardSnapshot) {
@@ -124,7 +140,7 @@ public class TaskApi {
 		value = "Update task",
 		notes = "Returns empty body")
 	@ApiResponses({
-		@ApiResponse(code = 201, message = "Task updated"),
+		@ApiResponse(code = 200, message = "Task updated"),
 		@ApiResponse(code = 400, message = "Given input was invalid")})
 	@RequestMapping(
 		method = PUT,
@@ -138,7 +154,7 @@ public class TaskApi {
 		value = "Move task",
 		notes = "Returns empty body")
 	@ApiResponses({
-		@ApiResponse(code = 201, message = "Task moved"),
+		@ApiResponse(code = 200, message = "Task moved"),
 		@ApiResponse(code = 400, message = "Given input was invalid")})
 	@RequestMapping(
 		value = "/move",
@@ -146,6 +162,36 @@ public class TaskApi {
 		consumes = MediaType.APPLICATION_JSON_VALUE)
 	public HttpEntity<Void> move(@Valid @RequestBody TaskMove taskMove) {
 		taskBO.move(taskMove.getTaskId(), taskMove.getColumnId(), taskMove.getPosition());
+		return new ResponseEntity<>(HttpStatus.OK);
+	}
+	
+	@ApiOperation(
+		value = "Assign label to task",
+		notes = "Returns empty body")
+	@ApiResponses({
+		@ApiResponse(code = 200, message = "Label assigned"),
+		@ApiResponse(code = 400, message = "Given input was invalid")})
+	@RequestMapping(
+		value = "/label",
+		method = POST,
+		consumes = MediaType.APPLICATION_JSON_VALUE)
+	public HttpEntity<Void> assignLabel(@Valid @RequestBody LabelAssign labelAssign) {
+		taskBO.assignLabel(labelAssign.getTaskId(), labelAssign.getLabelId());
+		return new ResponseEntity<>(HttpStatus.OK);
+	}
+	
+	@ApiOperation(
+		value = "Assign user to task",
+		notes = "Returns empty body")
+	@ApiResponses({
+		@ApiResponse(code = 200, message = "User assigned"),
+		@ApiResponse(code = 400, message = "Given input was invalid")})
+	@RequestMapping(
+		value = "/assignUser",
+		method = POST,
+		consumes = MediaType.APPLICATION_JSON_VALUE)
+	public HttpEntity<Void> assignUser(@Valid @RequestBody UserAssign userAssign) {
+		taskBO.assignUser(userAssign.getTaskId(), userAssign.getAssigneeId());
 		return new ResponseEntity<>(HttpStatus.OK);
 	}
 	

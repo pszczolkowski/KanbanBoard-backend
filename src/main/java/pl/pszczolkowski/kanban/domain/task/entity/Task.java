@@ -104,5 +104,13 @@ public class Task {
 	public void removeLabel() {
 		this.labelId = null;
 	}
+
+	public void setLabelId(Long labelId) {
+		this.labelId = labelId;
+	}
+
+	public void assignUser(Long assigneeId) {
+		this.assigneeId = assigneeId;
+	}
 	
 }
