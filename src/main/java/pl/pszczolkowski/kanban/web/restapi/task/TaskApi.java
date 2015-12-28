@@ -134,7 +134,7 @@ public class TaskApi {
 		value = "Update task",
 		notes = "Returns empty body")
 	@ApiResponses({
-		@ApiResponse(code = 201, message = "Task updated"),
+		@ApiResponse(code = 200, message = "Task updated"),
 		@ApiResponse(code = 400, message = "Given input was invalid")})
 	@RequestMapping(
 		method = PUT,
@@ -148,7 +148,7 @@ public class TaskApi {
 		value = "Move task",
 		notes = "Returns empty body")
 	@ApiResponses({
-		@ApiResponse(code = 201, message = "Task moved"),
+		@ApiResponse(code = 200, message = "Task moved"),
 		@ApiResponse(code = 400, message = "Given input was invalid")})
 	@RequestMapping(
 		value = "/move",
