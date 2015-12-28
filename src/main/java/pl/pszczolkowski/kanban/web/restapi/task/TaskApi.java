@@ -42,6 +42,7 @@ public class TaskApi {
 	private final Validator taskUpdateValidator;
 	private final Validator taskMoveValidator;
 	private final Validator labelAssignValidator;
+	private final Validator userAssignValidator;
 	
 	@Autowired
 	public TaskApi(TaskBO taskBO, TaskSnapshotFinder taskSnapshotFinder, BoardSnapshotFinder boardSnapshotFinder,  
@@ -78,6 +79,11 @@ public class TaskApi {
 	@InitBinder("labelAssign")
 	protected void initLabelAssignBinder(WebDataBinder binder) {
 		binder.setValidator(labelAssignValidator);
+	}
+	
+	@InitBinder("userAssign")
+	protected void initUserAssignBinder(WebDataBinder binder) {
+		binder.setValidator(userAssignValidator);
 	}
 	
 	private boolean userIsBoardMember(long loggedUserId, BoardSnapshot boardSnapshot) {
@@ -171,6 +177,21 @@ public class TaskApi {
 		consumes = MediaType.APPLICATION_JSON_VALUE)
 	public HttpEntity<Void> assignLabel(@Valid @RequestBody LabelAssign labelAssign) {
 		taskBO.assignLabel(labelAssign.getTaskId(), labelAssign.getLabelId());
+		return new ResponseEntity<>(HttpStatus.OK);
+	}
+	
+	@ApiOperation(
+		value = "Assign user to task",
+		notes = "Returns empty body")
+	@ApiResponses({
+		@ApiResponse(code = 200, message = "User assigned"),
+		@ApiResponse(code = 400, message = "Given input was invalid")})
+	@RequestMapping(
+		value = "/assignUser",
+		method = POST,
+		consumes = MediaType.APPLICATION_JSON_VALUE)
+	public HttpEntity<Void> assignUser(@Valid @RequestBody UserAssign userAssign) {
+		taskBO.assignUser(userAssign.getTaskId(), userAssign.getAssigneeId());
 		return new ResponseEntity<>(HttpStatus.OK);
 	}
 	

@@ -108,5 +108,9 @@ public class Task {
 	public void setLabelId(Long labelId) {
 		this.labelId = labelId;
 	}
+
+	public void assignUser(Long assigneeId) {
+		this.assigneeId = assigneeId;
+	}
 	
 }

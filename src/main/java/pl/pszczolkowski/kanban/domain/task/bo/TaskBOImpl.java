@@ -116,4 +116,12 @@ public class TaskBOImpl implements TaskBO {
 		taskRepository.save(task);
 	}
 
+	@Override
+	public void assignUser(Long taskId, Long assigneeId) {
+		Task task = taskRepository.findOne(taskId);
+		
+		task.assignUser(assigneeId);
+		taskRepository.save(task);
+	}
+
 }
