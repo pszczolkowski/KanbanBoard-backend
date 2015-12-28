@@ -2,8 +2,10 @@ package pl.pszczolkowski.kanban.web.restapi.label;
 
 import static java.util.stream.Collectors.toList;
 import static org.springframework.http.HttpStatus.CREATED;
+import static org.springframework.web.bind.annotation.RequestMethod.DELETE;
 import static org.springframework.web.bind.annotation.RequestMethod.GET;
 import static org.springframework.web.bind.annotation.RequestMethod.POST;
+import static pl.pszczolkowski.kanban.domain.board.entity.Permissions.ADMIN;
 
 import java.util.List;
 
@@ -18,6 +20,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.validation.Validator;
 import org.springframework.web.bind.WebDataBinder;
 import org.springframework.web.bind.annotation.InitBinder;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
@@ -108,6 +111,41 @@ public class LabelApi {
 		return ResponseEntity
 				.status(CREATED)
 				.body(new Label(labelSnapshot));
+	}
+	
+	@ApiOperation(
+		value = "Delete label",
+		notes = "Returns empty body")
+	@ApiResponses({
+		@ApiResponse(code = 200, message = "Label deleted"),
+		@ApiResponse(code = 400, message = "Given input was invalid")})
+	@RequestMapping(
+		value = "/{id}",
+		method = DELETE)
+	public HttpEntity<Void> delete(@PathVariable("id") long labelId) {
+		LabelSnapshot labelSnapshot = labelSnapshotFinder.findById(labelId);
+		if (labelSnapshot != null) {
+			BoardSnapshot boardSnapshot = boardSnapshotFinder.findById(labelSnapshot.getBoardId());
+			if (!loggedUserIsBoardAdmin(boardSnapshot)) {
+				return new ResponseEntity<>(HttpStatus.FORBIDDEN);
+			}
+			
+			labelBO.delete(labelId);
+		}
+		
+		return new ResponseEntity<>(HttpStatus.OK);
+	}
+
+	private boolean loggedUserIsBoardAdmin(BoardSnapshot boardSnapshot) {
+		Long loggedUserId = LoggedUserService.getSnapshot().getId();
+		
+		return boardSnapshot
+			.getMembers()
+			.stream()
+			.filter(m -> m.getId() == loggedUserId)
+			.filter(m -> m.getPermissions() == ADMIN)
+			.findAny()
+			.isPresent();
 	}
 	
 }

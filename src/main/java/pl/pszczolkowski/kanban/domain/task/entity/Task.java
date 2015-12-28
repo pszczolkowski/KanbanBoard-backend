@@ -100,5 +100,9 @@ public class Task {
 		this.title = title;
 		this.description = description;
 	}
+
+	public void removeLabel() {
+		this.labelId = null;
+	}
 	
 }

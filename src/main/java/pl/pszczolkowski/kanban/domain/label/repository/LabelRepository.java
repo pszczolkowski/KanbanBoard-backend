@@ -15,4 +15,6 @@ public interface LabelRepository extends JpaRepository<Label, Long> {
 
 	Optional<Label> findByIdAndBoardId(Long labelId, long boardId);
 
+	Optional<Label> findById(long labelId);
+
 }

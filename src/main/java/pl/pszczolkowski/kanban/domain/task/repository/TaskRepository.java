@@ -1,5 +1,6 @@
 package pl.pszczolkowski.kanban.domain.task.repository;
 
+import java.util.List;
 import java.util.Optional;
 
 import org.springframework.data.jpa.repository.JpaRepository;
@@ -14,5 +15,7 @@ public interface TaskRepository extends JpaRepository<Task, Long> {
 	Optional<Integer> findMaxTaskIdOnBoard(@Param("boardId") long boardId);
 
 	Optional<Task> findById(long taskId);
+
+	List<Task> findByLabelId(Long labelId);
 
 }

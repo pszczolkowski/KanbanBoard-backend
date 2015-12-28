@@ -11,5 +11,7 @@ public interface TaskBO {
 	void move(long taskId, Long columnId, int position);
 
 	void edit(Long id, String title, String description);
+
+	void detachLabelFromTasksInBoard(Long labelId);
 	
 }

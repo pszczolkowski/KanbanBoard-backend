@@ -11,5 +11,7 @@ public interface LabelSnapshotFinder {
 	LabelSnapshot findByBoardIdAndName(long boardId, String name);
 
 	LabelSnapshot findByIdAndBoardId(Long labelId, long boardId);
+
+	LabelSnapshot findById(long labelId);
 	
 }

@@ -1,5 +1,6 @@
 package pl.pszczolkowski.kanban.domain.task.bo;
 
+import java.util.List;
 import java.util.Objects;
 import java.util.Optional;
 
@@ -96,6 +97,15 @@ public class TaskBOImpl implements TaskBO {
 			task.edit(title, description);
 			taskRepository.save(task);
 		}
+	}
+
+	@Override
+	public void detachLabelFromTasksInBoard(Long labelId) {
+		List<Task> tasks = taskRepository.findByLabelId(labelId);
+		tasks.stream()
+			.forEach(t -> t.removeLabel());
+		
+		taskRepository.save(tasks);
 	}
 
 }

@@ -50,4 +50,12 @@ public class LabelSnapshotFinderImpl implements LabelSnapshotFinder {
 				.orElse(null);
 	}
 
+	@Override
+	public LabelSnapshot findById(long labelId) {
+		return labelRepository
+				.findById(labelId)
+				.map(Label::toSnapshot)
+				.orElse(null);
+	}
+
 }
