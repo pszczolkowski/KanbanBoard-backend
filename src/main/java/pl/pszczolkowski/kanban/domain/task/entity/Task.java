@@ -1,5 +1,6 @@
 package pl.pszczolkowski.kanban.domain.task.entity;
 
+import static javax.persistence.EnumType.STRING;
 import static javax.persistence.FetchType.EAGER;
 import static javax.persistence.GenerationType.AUTO;
 
@@ -7,6 +8,7 @@ import java.sql.Timestamp;
 import java.time.LocalDateTime;
 
 import javax.persistence.Entity;
+import javax.persistence.Enumerated;
 import javax.persistence.GeneratedValue;
 import javax.persistence.Id;
 import javax.persistence.ManyToOne;
@@ -52,6 +54,10 @@ public class Task {
 	private Long labelId;
 	
 	@NotNull
+	@Enumerated(STRING)
+	private TaskPriority priority;
+	
+	@NotNull
 	private Timestamp createdAt;
 	
 	@NotNull
@@ -63,10 +69,11 @@ public class Task {
 	
 	protected Task() {}
 
-	public Task(Column column, int idOnBoard, String title, String description, Long assigneeId, Long labelId) {
+	public Task(Column column, int idOnBoard, String title, String description, Long assigneeId, Long labelId, TaskPriority priority) {
 		this.column = column;
 		this.idOnBoard = idOnBoard;
 		this.labelId = labelId;
+		this.priority = priority;
 		this.boardId = column.getBoardId();
 		this.title = title;
 		this.description = description;
@@ -81,7 +88,7 @@ public class Task {
 		}
 		
 		LocalDateTime createdAtExport = LocalDateTimePersistenceConverter.convertToEntityAttributeValue(createdAt);
-		return new TaskSnapshot(id, idOnBoard, boardId, title, description, assigneeId, position, labelId, createdAtExport, column.getId());
+		return new TaskSnapshot(id, idOnBoard, boardId, title, description, assigneeId, position, labelId, priority, createdAtExport, column.getId());
 	}
 
 	Long getId() {
@@ -96,9 +103,10 @@ public class Task {
 		this.column = column;
 	}
 
-	public void edit(String title, String description) {
+	public void edit(String title, String description, TaskPriority priority) {
 		this.title = title;
 		this.description = description;
+		this.priority = priority;
 	}
 
 	public void removeLabel() {

@@ -17,6 +17,7 @@ public class Task {
 	private final Long assigneeId;
 	private final int position;
 	private final Long labelId;
+	private final TaskPriority priority;
 	private final LocalDateTime createdAt;
 	private final long columnId;
 	
@@ -29,6 +30,7 @@ public class Task {
 		this.assigneeId = taskSnapshot.getAssigneeId();
 		this.position = taskSnapshot.getPosition();
 		this.labelId = taskSnapshot.getLabelId();
+		this.priority = TaskPriority.from(taskSnapshot.getPriority());
 		this.createdAt = taskSnapshot.getCreatedAt();
 		this.columnId = taskSnapshot.getColumnId();
 	}
@@ -71,6 +73,11 @@ public class Task {
 	@ApiModelProperty("Unique identifier of label that is assigned to the task")
 	public Long getLabelId() {
 		return labelId;
+	}
+	
+	@ApiModelProperty("Task priority")
+	public TaskPriority getPriority() {
+		return priority;
 	}
 
 	@ApiModelProperty("Date of task creation")

@@ -10,6 +10,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 
 import pl.pszczolkowski.kanban.domain.task.entity.Column;
 import pl.pszczolkowski.kanban.domain.task.entity.Task;
+import pl.pszczolkowski.kanban.domain.task.entity.TaskPriority;
 import pl.pszczolkowski.kanban.domain.task.repository.ColumnRepository;
 import pl.pszczolkowski.kanban.domain.task.repository.TaskRepository;
 import pl.pszczolkowski.kanban.domain.task.snapshot.TaskSnapshot;
@@ -30,11 +31,11 @@ public class TaskBOImpl implements TaskBO {
 	}
 
 	@Override
-	public TaskSnapshot create(long columnId, String title, String description, Long assigneeId, Long labelId) {
+	public TaskSnapshot create(long columnId, String title, String description, Long assigneeId, Long labelId, TaskPriority taskPriority) {
 		Column column = columnRepository.findOne(columnId);
 		Optional<Integer> maxTaskIdOnBoard = taskRepository.findMaxTaskIdOnBoard(column.toSnapshot().getBoardId());
 		
-		Task task = new Task(column, maxTaskIdOnBoard.orElse(0) + 1, title, description, assigneeId, labelId);
+		Task task = new Task(column, maxTaskIdOnBoard.orElse(0) + 1, title, description, assigneeId, labelId, taskPriority);
 		task = taskRepository.save(task);
 		column.addTask(task);
 		columnRepository.save(column);
@@ -88,13 +89,14 @@ public class TaskBOImpl implements TaskBO {
 	}
 
 	@Override
-	public void edit(Long taskId, String title, String description) {
+	public void edit(Long taskId, String title, String description, TaskPriority taskPriority) {
 		Task task = taskRepository.findOne(taskId);
 		TaskSnapshot taskSnapshot = task.toSnapshot();
 		
 		if (!title.equals(taskSnapshot.getTitle()) ||
-				!Objects.equals(description, taskSnapshot.getDescription())) {
-			task.edit(title, description);
+				!Objects.equals(description, taskSnapshot.getDescription()) ||
+				taskPriority != taskSnapshot.getPriority()) {
+			task.edit(title, description, taskPriority);
 			taskRepository.save(task);
 		}
 	}

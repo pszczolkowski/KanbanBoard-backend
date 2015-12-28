@@ -23,6 +23,10 @@ public class TaskUpdate {
 	
 	@Min(1)
 	private Long labelId;
+	
+	@NotNull
+	private TaskPriority priority;
+
 
 	@ApiModelProperty("Unique identifier of task")
 	public Long getId() {
@@ -43,6 +47,11 @@ public class TaskUpdate {
 	public Long getLabelId() {
 		return labelId;
 	}
+	
+	@ApiModelProperty("Priority that should be set for task")
+	public TaskPriority getPriority() {
+		return priority;
+	}
 
 	public void setId(Long id) {
 		this.id = id;
@@ -58,6 +67,10 @@ public class TaskUpdate {
 	
 	public void setLabelId(Long labelId) {
 		this.labelId = labelId;
+	}
+	
+	public void setPriority(TaskPriority priority) {
+		this.priority = priority;
 	}
 	
 }
