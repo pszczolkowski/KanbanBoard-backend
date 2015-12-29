@@ -45,18 +45,21 @@ public class ColumnApi {
 	private final Validator columnNewValidator;
 	private final Validator columnMoveValidator;
 	private final Validator columnUpdateValidator;
+	private final Validator columnDeleteValidator;
 
 	@Autowired
 	public ColumnApi(ColumnBO columnBO, ColumnSnapshotFinder columnSnapshotFinder, BoardSnapshotFinder boardSnapshotFinder, 
 			@Qualifier("columnNewValidator") Validator columnNewValidator,
 			@Qualifier("columnMoveValidator") Validator columnMoveValidator,
-			@Qualifier("columnUpdateValidator") Validator columnUpdateValidator) {
+			@Qualifier("columnUpdateValidator") Validator columnUpdateValidator,
+			@Qualifier("columnDeleteValidator") Validator columnDeleteValidator) {
 		this.columnBO = columnBO;
 		this.columnSnapshotFinder = columnSnapshotFinder;
 		this.boardSnapshotFinder = boardSnapshotFinder;
 		this.columnNewValidator = columnNewValidator;
 		this.columnMoveValidator = columnMoveValidator;
 		this.columnUpdateValidator = columnUpdateValidator;
+		this.columnDeleteValidator = columnDeleteValidator;
 	}
 	
 	@InitBinder("columnNew")
@@ -72,6 +75,11 @@ public class ColumnApi {
 	@InitBinder("columnUpdate")
 	protected void initUpdateBinder(WebDataBinder binder) {
 		binder.setValidator(columnUpdateValidator);
+	}
+	
+	@InitBinder("columnDelete")
+	protected void initDeleteBinder(WebDataBinder binder) {
+		binder.setValidator(columnDeleteValidator);
 	}
 	
 	private boolean userIsBoardMember(long loggedUserId, BoardSnapshot boardSnapshot) {
