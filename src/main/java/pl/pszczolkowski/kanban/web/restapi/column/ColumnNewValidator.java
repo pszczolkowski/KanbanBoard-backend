@@ -1,9 +1,14 @@
 package pl.pszczolkowski.kanban.web.restapi.column;
 
+import static pl.pszczolkowski.kanban.domain.board.entity.Permissions.ADMIN;
+
+import java.util.Optional;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.validation.Errors;
 
 import pl.pszczolkowski.kanban.domain.board.finder.BoardSnapshotFinder;
+import pl.pszczolkowski.kanban.domain.board.snapshot.BoardMemberSnapshot;
 import pl.pszczolkowski.kanban.domain.board.snapshot.BoardSnapshot;
 import pl.pszczolkowski.kanban.domain.task.finder.ColumnSnapshotFinder;
 import pl.pszczolkowski.kanban.domain.task.snapshot.ColumnSnapshot;
@@ -38,7 +43,7 @@ public class ColumnNewValidator extends AbstractValidator {
 			return;
 		}
 		
-		if (userIsNotBoardMember(boardSnapshot)) {
+		if (userIsNotBoardAdmin(boardSnapshot)) {
 			errors.rejectValue("boardId", "BoardWithGivenIdDoesntExist");
 		}
 		
@@ -49,13 +54,16 @@ public class ColumnNewValidator extends AbstractValidator {
 		}
 	}
 	
-	private boolean userIsNotBoardMember(BoardSnapshot boardSnapshot) {
+	private boolean userIsNotBoardAdmin(BoardSnapshot boardSnapshot) {
 		Long loggedUserId = LoggedUserService.getSnapshot().getId();
 		
-		return boardSnapshot
+		Optional<BoardMemberSnapshot> member = boardSnapshot
 			.getMembers()
 			.stream()
-			.noneMatch(m -> m.getUserId() == loggedUserId);
+			.filter(m -> m.getUserId() == loggedUserId)
+			.findFirst();
+		
+		return !member.isPresent() || member.get().getPermissions() != ADMIN;
 	}
 	
 }
