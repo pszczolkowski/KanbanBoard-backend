@@ -142,7 +142,7 @@ public class LabelApi {
 		return boardSnapshot
 			.getMembers()
 			.stream()
-			.filter(m -> m.getId() == loggedUserId)
+			.filter(m -> m.getUserId() == loggedUserId)
 			.filter(m -> m.getPermissions() == ADMIN)
 			.findAny()
 			.isPresent();
