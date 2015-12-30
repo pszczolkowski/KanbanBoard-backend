@@ -18,5 +18,7 @@ public interface TaskBO {
 	void assignLabel(Long taskId, Long labelId);
 
 	void assignUser(Long taskId, Long assigneeId);
+
+	void delete(long taskId);
 	
 }

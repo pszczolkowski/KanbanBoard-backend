@@ -126,4 +126,16 @@ public class TaskBOImpl implements TaskBO {
 		taskRepository.save(task);
 	}
 
+	@Override
+	public void delete(long taskId) {
+		Optional<Task> task = taskRepository.findById(taskId);
+		if (task.isPresent()) {
+			Column column = columnRepository.findOne(task.get().toSnapshot().getColumnId());
+			column.removeTask(task.get());
+			
+			columnRepository.save(column);
+		}
+		
+	}
+
 }

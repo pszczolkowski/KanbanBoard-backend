@@ -1,6 +1,7 @@
 package pl.pszczolkowski.kanban.web.restapi.task;
 
 import static org.springframework.http.HttpStatus.CREATED;
+import static org.springframework.web.bind.annotation.RequestMethod.DELETE;
 import static org.springframework.web.bind.annotation.RequestMethod.GET;
 import static org.springframework.web.bind.annotation.RequestMethod.POST;
 import static org.springframework.web.bind.annotation.RequestMethod.PUT;
@@ -193,6 +194,39 @@ public class TaskApi {
 	public HttpEntity<Void> assignUser(@Valid @RequestBody UserAssign userAssign) {
 		taskBO.assignUser(userAssign.getTaskId(), userAssign.getAssigneeId());
 		return new ResponseEntity<>(HttpStatus.OK);
+	}
+	
+	@ApiOperation(
+		value = "Delete task",
+		notes = "Returns empty body")
+	@ApiResponses({
+		@ApiResponse(code = 200, message = "Taskdeleted"),
+		@ApiResponse(code = 400, message = "Given input was invalid")})
+	@RequestMapping(
+		value = "/{id}",
+		method = DELETE)
+	public HttpEntity<Void> delete(@PathVariable("id") long taskId) {
+		TaskSnapshot taskSnapshot = taskSnapshotFinder.findById(taskId);
+		if (taskSnapshot == null) {
+			return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
+		}
+		
+		BoardSnapshot boardSnapshot = boardSnapshotFinder.findById(taskSnapshot.getBoardId());
+		if (!loggedUserIsBoardMember(boardSnapshot)) {
+			return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
+		}
+		
+		taskBO.delete(taskId);
+		return new ResponseEntity<>(HttpStatus.OK);
+	}
+
+	private boolean loggedUserIsBoardMember(BoardSnapshot boardSnapshot) {
+		Long loggedUserId = LoggedUserService.getSnapshot().getId();
+		
+		return boardSnapshot
+			.getMembers()
+			.stream()
+			.anyMatch(m -> m.getUserId() == loggedUserId);
 	}
 	
 }
