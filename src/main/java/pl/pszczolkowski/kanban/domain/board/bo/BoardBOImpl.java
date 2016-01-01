@@ -3,10 +3,12 @@ package pl.pszczolkowski.kanban.domain.board.bo;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.ApplicationEventPublisher;
 
 import pl.pszczolkowski.kanban.domain.board.entity.Board;
 import pl.pszczolkowski.kanban.domain.board.entity.BoardMember;
 import pl.pszczolkowski.kanban.domain.board.entity.Permissions;
+import pl.pszczolkowski.kanban.domain.board.event.BoardDeletedEvent;
 import pl.pszczolkowski.kanban.domain.board.repository.BoardMemberRepository;
 import pl.pszczolkowski.kanban.domain.board.repository.BoardRepository;
 import pl.pszczolkowski.kanban.domain.board.snapshot.BoardMemberSnapshot;
@@ -20,11 +22,14 @@ public class BoardBOImpl implements BoardBO {
 	
 	private final BoardRepository boardRepository;
 	private final BoardMemberRepository boardMemberRepository;
+	private final ApplicationEventPublisher eventPublisher;
 
 	@Autowired
-	public BoardBOImpl(BoardRepository boardRepository, BoardMemberRepository boardMemberRepository) {
+	public BoardBOImpl(BoardRepository boardRepository, BoardMemberRepository boardMemberRepository,
+			ApplicationEventPublisher eventPublisher) {
 		this.boardRepository = boardRepository;
 		this.boardMemberRepository = boardMemberRepository;
+		this.eventPublisher = eventPublisher;
 	}
 
 	@Override
@@ -62,6 +67,17 @@ public class BoardBOImpl implements BoardBO {
 		
 		boardMember.setPermissions(permissions);
 		boardMemberRepository.save(boardMember);
+	}
+
+	@Override
+	public void delete(long boardId) {
+		Board board = boardRepository.findOne(boardId);
+		if (board != null) {
+			boardRepository.delete(board);
+			
+			BoardDeletedEvent boardDeletedEvent = new BoardDeletedEvent(board.toSnapshot());
+			eventPublisher.publishEvent(boardDeletedEvent);
+		}
 	}
 
 }

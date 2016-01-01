@@ -13,5 +13,7 @@ public interface BoardBO {
 	void removeMember(long boardId, long userId);
 
 	void setPermissions(Long boardId, Long memberId, Permissions permissions);
+
+	void delete(long boardId);
 	
 }

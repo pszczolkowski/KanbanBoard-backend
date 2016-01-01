@@ -109,4 +109,9 @@ public class ColumnBOImpl implements ColumnBO {
 		}
 	}
 
+	@Override
+	public void deleteFromBoard(long boardId) {
+		columnRepository.deleteByBoardId(boardId);
+	}
+
 }

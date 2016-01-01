@@ -20,4 +20,6 @@ public interface ColumnRepository extends JpaRepository<Column, Long> {
 
 	List<Column> findByBoardIdOrderByPosition(long boardId);
 
+	void deleteByBoardId(long boardId);
+
 }

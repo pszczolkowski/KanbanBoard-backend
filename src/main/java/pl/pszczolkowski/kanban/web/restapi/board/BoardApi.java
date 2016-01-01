@@ -1,14 +1,18 @@
 package pl.pszczolkowski.kanban.web.restapi.board;
 
 import static java.util.stream.Collectors.toList;
+import static java.util.stream.Collectors.toSet;
 import static org.springframework.http.HttpStatus.CREATED;
+import static org.springframework.web.bind.annotation.RequestMethod.DELETE;
 import static org.springframework.web.bind.annotation.RequestMethod.GET;
 import static org.springframework.web.bind.annotation.RequestMethod.POST;
 import static pl.pszczolkowski.kanban.domain.board.entity.Permissions.ADMIN;
 
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
+import java.util.Set;
 
 import javax.validation.Valid;
 
@@ -77,15 +81,27 @@ public class BoardApi {
 		notes = "Returns all boards that logged user has access to")
 	@ApiResponses({
 		@ApiResponse(code = 200, message = "Boards returned")})
-	@JsonView(View.Summary.class)
 	@RequestMapping(method = GET)
 	public HttpEntity<List<Board>> list() {
 		Long loggedUserId = LoggedUserService.getSnapshot().getId();
 		
+		List<BoardSnapshot> boardSnapshots = boardSnapshotFinder.findByMemberId(loggedUserId);
+		
+		Set<Long> memberIds = new HashSet<>();
+		for (BoardSnapshot boardSnapshot : boardSnapshots) {
+			memberIds.addAll(
+				boardSnapshot
+				.getMembers()
+				.stream()
+				.map(BoardMemberSnapshot::getUserId)
+				.collect(toSet()));
+		}
+		Map<Long, UserSnapshot> userSnapshots = userSnapshotFinder.findAllAsMap(memberIds);
+		
 		List<Board> boards = boardSnapshotFinder
 			.findByMemberId(loggedUserId)
 			.stream()
-			.map(Board::new)
+			.map(b -> new Board(b, userSnapshots))
 			.collect(toList());
 		
 		return ResponseEntity
@@ -152,7 +168,7 @@ public class BoardApi {
 		value = "Invite user as board member",
 		notes = "Returns empty body")
 	@ApiResponses({
-		@ApiResponse(code = 201, message = "User invited"),
+		@ApiResponse(code = 200, message = "User invited"),
 		@ApiResponse(code = 400, message = "Given input was invalid")})
 	@RequestMapping(
 		value = "/inviteUser",
@@ -169,7 +185,7 @@ public class BoardApi {
 		value = "Remove board member",
 		notes = "Returns empty body")
 	@ApiResponses({
-		@ApiResponse(code = 201, message = "Member removed"),
+		@ApiResponse(code = 200, message = "Member removed"),
 		@ApiResponse(code = 400, message = "Given input was invalid"),
 		@ApiResponse(code = 403, message = "Logged user is not board member")})
 	@RequestMapping(
@@ -207,7 +223,7 @@ public class BoardApi {
 		value = "Set board member permissions",
 		notes = "Returns empty body")
 	@ApiResponses({
-		@ApiResponse(code = 201, message = "Permissions set"),
+		@ApiResponse(code = 200, message = "Permissions set"),
 		@ApiResponse(code = 400, message = "Given input was invalid")})
 	@RequestMapping(
 		value = "/member/permissions",
@@ -215,6 +231,27 @@ public class BoardApi {
 		consumes = MediaType.APPLICATION_JSON_VALUE)
 	public HttpEntity<Void> setPermissions(@Valid @RequestBody UserPermissions userPermissions) {
 		boardBO.setPermissions(userPermissions.getBoardId(), userPermissions.getMemberId(), userPermissions.getPermissions().toDomain());
+		return new ResponseEntity<>(HttpStatus.OK);
+	}
+	
+	@ApiOperation(
+		value = "Delete board",
+		notes = "Returns empty body")
+	@ApiResponses({
+		@ApiResponse(code = 200, message = "Board deleted"),
+		@ApiResponse(code = 400, message = "Given input was invalid")})
+	@RequestMapping(
+		value = "/{id}",
+		method = DELETE)
+	public HttpEntity<Void> setPermissions(@PathVariable("id") long boardId) {
+		BoardSnapshot boardSnapshot = boardSnapshotFinder.findById(boardId);
+		long loggedUserId = LoggedUserService.getSnapshot().getId();
+		
+		if (!loggedUserIsBoardAdmin(loggedUserId, boardSnapshot)) {
+			return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
+		}
+		
+		boardBO.delete(boardId);
 		return new ResponseEntity<>(HttpStatus.OK);
 	}
 
