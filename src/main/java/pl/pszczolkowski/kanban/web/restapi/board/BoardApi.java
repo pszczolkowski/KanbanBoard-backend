@@ -110,12 +110,15 @@ public class BoardApi {
 	}
 	
 	private boolean loggedUserIsBoardMember(BoardSnapshot boardSnapshot) {
-		Long loggedUserId = LoggedUserService.getSnapshot().getId();
-		
+		return loggedUserIsBoardMember(LoggedUserService.getSnapshot().getId(), boardSnapshot);
+	}
+	
+
+	private boolean loggedUserIsBoardMember(Long loggedUserId, BoardSnapshot boardSnapshot) {
 		return boardSnapshot
-			.getMembers()
-			.stream()
-			.anyMatch(m -> m.getUserId() == loggedUserId);
+				.getMembers()
+				.stream()
+				.anyMatch(m -> m.getUserId() == loggedUserId);
 	}
 	
 	@ApiOperation(
@@ -234,6 +237,39 @@ public class BoardApi {
 		return new ResponseEntity<>(HttpStatus.OK);
 	}
 	
+	@ApiOperation(
+		value = "Leave board",
+		notes = "Returns empty body")
+	@ApiResponses({
+		@ApiResponse(code = 200, message = "Board left"),
+		@ApiResponse(code = 400, message = "Given input was invalid")})
+	@RequestMapping(
+		value = "/{id}/leave",
+		method = POST)
+	public HttpEntity<Void> leave(@PathVariable("id") long boardId) {
+		BoardSnapshot boardSnapshot = boardSnapshotFinder.findById(boardId);
+		Long loggedUserId = LoggedUserService.getSnapshot().getId();
+		
+		if (!loggedUserIsBoardMember(loggedUserId, boardSnapshot)) {
+			return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
+		}
+		
+		if (boardHasNoOtherAdminThanLoggedUser(loggedUserId, boardSnapshot)) {
+			return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
+		}
+		
+		boardBO.removeMember(boardId, loggedUserId);
+		return new ResponseEntity<>(HttpStatus.OK);
+	}
+
+	private boolean boardHasNoOtherAdminThanLoggedUser(Long loggedUserId, BoardSnapshot boardSnapshot) {
+		return boardSnapshot
+			.getMembers()
+			.stream()
+			.filter(m -> m.getPermissions() == ADMIN)
+			.noneMatch(m -> m.getUserId() != loggedUserId);
+	}
+
 	@ApiOperation(
 		value = "Delete board",
 		notes = "Returns empty body")
