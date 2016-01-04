@@ -21,7 +21,7 @@ public class ColumnBuilder implements ApplicationContextAware {
 	private String name = "Column" + RANDOM.nextInt();
 	private long boardId = Long.MAX_VALUE;
 	private int position = 0;
-	private int workInProgressLimit = 0;
+	private Integer workInProgressLimit = null;
 	
 	public ColumnBuilder withName(String name) {
 		this.name = name;
@@ -38,7 +38,7 @@ public class ColumnBuilder implements ApplicationContextAware {
 		return this;
 	}
 
-	public ColumnBuilder withWorkInProgressLimit(int workInProgressLimit) {
+	public ColumnBuilder withWorkInProgressLimit(Integer workInProgressLimit) {
 		this.workInProgressLimit = workInProgressLimit;
 		return this;
 	}
