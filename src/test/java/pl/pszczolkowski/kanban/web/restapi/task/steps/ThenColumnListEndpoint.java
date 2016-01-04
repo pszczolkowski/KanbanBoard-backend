@@ -29,7 +29,7 @@ public class ThenColumnListEndpoint extends ThenStage<ThenColumnListEndpoint> {
 			.andExpect(jsonPath("$[*].name", hasItems(isA(String.class))))
 			.andExpect(jsonPath("$[*].boardId", hasItems(isA(Integer.class))))
 			.andExpect(jsonPath("$[*].position", hasItems(isA(Integer.class))))
-			.andExpect(jsonPath("$[*].workInProgressLimit", hasItems(isA(Integer.class))));
+			.andExpect(jsonPath("$[*].workInProgressLimit").exists());
 	
 		return this;
 	}
