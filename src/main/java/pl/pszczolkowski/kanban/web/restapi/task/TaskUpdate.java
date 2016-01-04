@@ -6,6 +6,7 @@ import javax.validation.constraints.Size;
 
 import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;
+import pl.pszczolkowski.kanban.shared.annotations.TaskSize;
 
 @ApiModel
 public class TaskUpdate {
@@ -27,6 +28,9 @@ public class TaskUpdate {
 	@NotNull
 	private TaskPriority priority;
 
+	@NotNull
+	@TaskSize
+	private float size;
 
 	@ApiModelProperty("Unique identifier of task")
 	public Long getId() {
@@ -52,6 +56,11 @@ public class TaskUpdate {
 	public TaskPriority getPriority() {
 		return priority;
 	}
+	
+	@ApiModelProperty("Size that should be set for task")
+	public float getSize() {
+		return size;
+	}
 
 	public void setId(Long id) {
 		this.id = id;
@@ -71,6 +80,10 @@ public class TaskUpdate {
 	
 	public void setPriority(TaskPriority priority) {
 		this.priority = priority;
+	}
+	
+	public void setSize(float size) {
+		this.size = size;
 	}
 	
 }

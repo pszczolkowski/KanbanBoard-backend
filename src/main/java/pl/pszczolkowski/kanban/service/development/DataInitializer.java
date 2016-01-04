@@ -28,6 +28,7 @@ import pl.pszczolkowski.kanban.domain.label.snapshot.LabelSnapshot;
 import pl.pszczolkowski.kanban.domain.task.bo.ColumnBO;
 import pl.pszczolkowski.kanban.domain.task.bo.TaskBO;
 import pl.pszczolkowski.kanban.domain.task.entity.TaskPriority;
+import pl.pszczolkowski.kanban.domain.task.entity.WorkInProgressLimitType;
 import pl.pszczolkowski.kanban.domain.task.snapshot.ColumnSnapshot;
 import pl.pszczolkowski.kanban.domain.user.bo.UserBO;
 import pl.pszczolkowski.kanban.domain.user.finder.UserSnapshotFinder;
@@ -110,13 +111,13 @@ public class DataInitializer implements ApplicationContextAware {
 	
 	private void createColumns() {
 		for (String columnName : COLUMN_NAMES) {
-			columnSnapshots.add(columnBO.add(boardSnapshot.getId(), columnName, null));
+			columnSnapshots.add(columnBO.add(boardSnapshot.getId(), columnName, null, WorkInProgressLimitType.QUANTITY));
 		}
 	}
 
 	private void createTasks() {
 		for (String taskName : TASK_NAMES) {
-			taskBO.create(randomColumn(), taskName, null, randomAssignee(), randomLabel(), randomPriority());
+			taskBO.create(randomColumn(), taskName, null, randomAssignee(), randomLabel(), randomPriority(), randomSize());
 		}
 	}
 	
@@ -147,6 +148,10 @@ public class DataInitializer implements ApplicationContextAware {
 	private TaskPriority randomPriority() {
 		TaskPriority[] taskPriorities = TaskPriority.values();
 		return taskPriorities[RANDOM.nextInt(taskPriorities.length)];
+	}
+	
+	private float randomSize() {
+		return RANDOM.nextInt(5) + 1;
 	}
 	
 	private void createBoardHistory() {

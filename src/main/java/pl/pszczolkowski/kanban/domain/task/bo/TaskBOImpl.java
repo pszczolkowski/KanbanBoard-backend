@@ -31,17 +31,19 @@ public class TaskBOImpl implements TaskBO {
 	}
 
 	@Override
-	public TaskSnapshot create(long columnId, String title, String description, Long assigneeId, Long labelId, TaskPriority taskPriority) {
+	public TaskSnapshot create(long columnId, String title, String description, Long assigneeId, Long labelId,
+			TaskPriority taskPriority, float size) {
 		Column column = columnRepository.findOne(columnId);
 		Optional<Integer> maxTaskIdOnBoard = taskRepository.findMaxTaskIdOnBoard(column.toSnapshot().getBoardId());
-		
-		Task task = new Task(column, maxTaskIdOnBoard.orElse(0) + 1, title, description, assigneeId, labelId, taskPriority);
+
+		Task task = new Task(column, maxTaskIdOnBoard.orElse(0) + 1, title, description, assigneeId, labelId,
+				taskPriority, size);
 		task = taskRepository.save(task);
 		column.addTask(task);
 		columnRepository.save(column);
-		
+
 		LOGGER.info("Task <{}> created on column <{}>", title, columnId);
-		
+
 		return task.toSnapshot();
 	}
 
@@ -90,14 +92,15 @@ public class TaskBOImpl implements TaskBO {
 	}
 
 	@Override
-	public void edit(Long taskId, String title, String description, TaskPriority taskPriority) {
+	public void edit(Long taskId, String title, String description, TaskPriority taskPriority, float size) {
 		Task task = taskRepository.findOne(taskId);
 		TaskSnapshot taskSnapshot = task.toSnapshot();
 		
 		if (!title.equals(taskSnapshot.getTitle()) ||
 				!Objects.equals(description, taskSnapshot.getDescription()) ||
-				taskPriority != taskSnapshot.getPriority()) {
-			task.edit(title, description, taskPriority);
+				taskPriority != taskSnapshot.getPriority() ||
+				size != taskSnapshot.getSize()) {
+			task.edit(title, description, taskPriority, size);
 			taskRepository.save(task);
 		}
 	}

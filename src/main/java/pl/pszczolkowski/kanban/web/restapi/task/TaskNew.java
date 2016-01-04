@@ -8,6 +8,7 @@ import javax.validation.constraints.Size;
 
 import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;
+import pl.pszczolkowski.kanban.shared.annotations.TaskSize;
 
 @ApiModel
 public class TaskNew {
@@ -28,6 +29,10 @@ public class TaskNew {
 	
 	@Min(1)
 	private Long labelId;
+	
+	@NotNull
+	@TaskSize
+	private float size;
 	
 	private TaskPriority priority = LOW;
 
@@ -60,6 +65,11 @@ public class TaskNew {
 	public Long getLabelId() {
 		return labelId;
 	}
+	
+	@ApiModelProperty("Size that should be set for task")
+	public float getSize() {
+		return size;
+	}
 
 	public void setTitle(String title) {
 		this.title = title;
@@ -83,6 +93,10 @@ public class TaskNew {
 	
 	public void setLabelId(Long labelId) {
 		this.labelId = labelId;
+	}
+
+	public void setSize(float size) {
+		this.size = size;
 	}
 	
 }

@@ -131,7 +131,7 @@ public class TaskApi {
 		consumes = MediaType.APPLICATION_JSON_VALUE)
 	public HttpEntity<Task> create(@Valid @RequestBody TaskNew taskNew) {
 		TaskSnapshot taskSnapshot = taskBO.create(taskNew.getColumnId(), taskNew.getTitle(), taskNew.getDescription(),
-				taskNew.getAssigneeId(), taskNew.getLabelId(), taskNew.getPriority().toDomain());
+				taskNew.getAssigneeId(), taskNew.getLabelId(), taskNew.getPriority().toDomain(), taskNew.getSize());
 		return ResponseEntity
 				.status(CREATED)
 				.body(new Task(taskSnapshot));
@@ -147,7 +147,8 @@ public class TaskApi {
 		method = PUT,
 		consumes = MediaType.APPLICATION_JSON_VALUE)
 	public HttpEntity<Task> update(@Valid @RequestBody TaskUpdate taskUpdate) {
-		taskBO.edit(taskUpdate.getId(), taskUpdate.getTitle(), taskUpdate.getDescription(), taskUpdate.getPriority().toDomain());
+		taskBO.edit(taskUpdate.getId(), taskUpdate.getTitle(), taskUpdate.getDescription(), taskUpdate.getPriority().toDomain(),
+				taskUpdate.getSize());
 		return new ResponseEntity<>(HttpStatus.OK);
 	}
 	

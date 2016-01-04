@@ -19,6 +19,7 @@ import javax.validation.constraints.Size;
 
 import pl.pszczolkowski.kanban.config.persistance.converter.LocalDateTimePersistenceConverter;
 import pl.pszczolkowski.kanban.domain.task.snapshot.TaskSnapshot;
+import pl.pszczolkowski.kanban.shared.annotations.TaskSize;
 import pl.pszczolkowski.kanban.shared.exception.EntityInStateNewException;
 
 @Entity
@@ -58,6 +59,10 @@ public class Task {
 	private TaskPriority priority;
 	
 	@NotNull
+	@TaskSize
+	private float size = 1;
+	
+	@NotNull
 	private Timestamp createdAt;
 	
 	@NotNull
@@ -69,7 +74,7 @@ public class Task {
 	
 	protected Task() {}
 
-	public Task(Column column, int idOnBoard, String title, String description, Long assigneeId, Long labelId, TaskPriority priority) {
+	public Task(Column column, int idOnBoard, String title, String description, Long assigneeId, Long labelId, TaskPriority priority, float size) {
 		this.column = column;
 		this.idOnBoard = idOnBoard;
 		this.labelId = labelId;
@@ -78,6 +83,7 @@ public class Task {
 		this.title = title;
 		this.description = description;
 		this.assigneeId = assigneeId;
+		this.size = size;
 		this.position = column.countTasks();
 		this.createdAt = LocalDateTimePersistenceConverter.convertToDatabaseColumnValue(LocalDateTime.now());
 	}
@@ -88,7 +94,7 @@ public class Task {
 		}
 		
 		LocalDateTime createdAtExport = LocalDateTimePersistenceConverter.convertToEntityAttributeValue(createdAt);
-		return new TaskSnapshot(id, idOnBoard, boardId, title, description, assigneeId, position, labelId, priority, createdAtExport, column.getId());
+		return new TaskSnapshot(id, idOnBoard, boardId, title, description, assigneeId, position, labelId, priority, size, createdAtExport, column.getId());
 	}
 
 	Long getId() {
@@ -103,10 +109,11 @@ public class Task {
 		this.column = column;
 	}
 
-	public void edit(String title, String description, TaskPriority priority) {
+	public void edit(String title, String description, TaskPriority priority, float size) {
 		this.title = title;
 		this.description = description;
 		this.priority = priority;
+		this.size = size;
 	}
 
 	public void removeLabel() {
