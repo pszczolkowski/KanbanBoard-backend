@@ -103,14 +103,18 @@ public class Column {
 		return Optional.ofNullable(position);
 	}
 
-	private void insertTask(Task task, int position) {
-		tasks.add(position, task);
-		task.moveTo(this);
+	private void updateTasksPositions() {
 		for (int i = 0; i < tasks.size(); i++) {
 			tasks.get(i).setPosition(i);
 		}
 	}
 	
+	private void insertTask(Task task, int position) {
+		tasks.add(position, task);
+		task.moveTo(this);
+		updateTasksPositions();
+	}
+
 	public void moveTask(long taskId, int position) {
 		Optional<Integer> taskPosition = indexOfTask(taskId);
 		if (!taskPosition.isPresent()) {
@@ -138,6 +142,8 @@ public class Column {
 		if (taskPosition.isPresent()) {
 			tasks.remove(taskPosition.get().intValue());
 		}
+		
+		updateTasksPositions();
 	}
 
 	public void setPosition(int position) {
