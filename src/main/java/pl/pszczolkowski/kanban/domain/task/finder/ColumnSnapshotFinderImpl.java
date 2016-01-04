@@ -1,8 +1,10 @@
 package pl.pszczolkowski.kanban.domain.task.finder;
 
+import static java.util.stream.Collectors.groupingBy;
 import static java.util.stream.Collectors.toList;
 
 import java.util.List;
+import java.util.Map;
 
 import org.springframework.beans.factory.annotation.Autowired;
 
@@ -43,6 +45,15 @@ public class ColumnSnapshotFinderImpl implements ColumnSnapshotFinder {
 	public ColumnSnapshot findByNameAndBoardId(String name, long boardId) {
 		Column column = columnRepository.findByBoardIdAndName(boardId, name);
 		return column == null ? null : column.toSnapshot();
+	}
+
+	@Override
+	public Map<Long, List<ColumnSnapshot>> findAllGroupedByBoardId() {
+		return columnRepository
+			.findAll()
+			.stream()
+			.map(Column::toSnapshot)
+			.collect(groupingBy(ColumnSnapshot::getBoardId));
 	}
 
 }
