@@ -1,5 +1,7 @@
 package pl.pszczolkowski.kanban.builder;
 
+import static pl.pszczolkowski.kanban.domain.task.entity.WorkInProgressLimitType.QUANTITY;
+
 import java.util.Random;
 
 import org.springframework.beans.BeansException;
@@ -8,6 +10,7 @@ import org.springframework.context.ApplicationContextAware;
 import org.springframework.stereotype.Component;
 
 import pl.pszczolkowski.kanban.domain.task.entity.Column;
+import pl.pszczolkowski.kanban.domain.task.entity.WorkInProgressLimitType;
 import pl.pszczolkowski.kanban.domain.task.repository.ColumnRepository;
 import pl.pszczolkowski.kanban.domain.task.snapshot.ColumnSnapshot;
 
@@ -22,6 +25,7 @@ public class ColumnBuilder implements ApplicationContextAware {
 	private long boardId = Long.MAX_VALUE;
 	private int position = 0;
 	private Integer workInProgressLimit = null;
+	private WorkInProgressLimitType workInProgressLimitType = QUANTITY;
 	
 	public ColumnBuilder withName(String name) {
 		this.name = name;
@@ -42,13 +46,18 @@ public class ColumnBuilder implements ApplicationContextAware {
 		this.workInProgressLimit = workInProgressLimit;
 		return this;
 	}
+	
+	public ColumnBuilder withWorkInProgressLimitType(WorkInProgressLimitType workInProgressLimitType) {
+		this.workInProgressLimitType = workInProgressLimitType;
+		return this;
+	}
 
 	public ColumnSnapshot build() {
 		if (columnRepository == null) {
 			throw new IllegalStateException("Required ColumnRepository dependency has not been initialized yet");
 		}
 		
-		Column column = new Column(boardId, name, position, workInProgressLimit);
+		Column column = new Column(boardId, name, position, workInProgressLimit, workInProgressLimitType);
 		column = columnRepository.save(column);
 		
 		return column.toSnapshot();

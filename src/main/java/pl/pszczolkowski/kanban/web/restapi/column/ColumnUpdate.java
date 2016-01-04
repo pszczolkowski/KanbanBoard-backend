@@ -22,6 +22,9 @@ public class ColumnUpdate {
 	
 	@Min(1)
 	private Integer workInProgressLimit;
+	
+	@NotNull
+	private WorkInProgressLimitType workInProgressLimitType;
 
 	@ApiModelProperty(
 		value = "Unique identifier of column that should be updated",
@@ -54,6 +57,17 @@ public class ColumnUpdate {
 
 	public void setWorkInProgressLimit(Integer workInProgressLimit) {
 		this.workInProgressLimit = workInProgressLimit;
+	}
+
+	@ApiModelProperty(
+		value = "Work in progress limit type for column",
+		required = true)
+	public WorkInProgressLimitType getWorkInProgressLimitType() {
+		return workInProgressLimitType;
+	}
+
+	public void setWorkInProgressLimitType(WorkInProgressLimitType workInProgressLimitType) {
+		this.workInProgressLimitType = workInProgressLimitType;
 	}
 	
 }

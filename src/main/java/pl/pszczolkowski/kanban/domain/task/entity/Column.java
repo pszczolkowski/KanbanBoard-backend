@@ -2,13 +2,16 @@ package pl.pszczolkowski.kanban.domain.task.entity;
 
 import static java.util.stream.Collectors.toList;
 import static javax.persistence.CascadeType.ALL;
+import static javax.persistence.EnumType.STRING;
 import static javax.persistence.GenerationType.AUTO;
+import static pl.pszczolkowski.kanban.domain.task.entity.WorkInProgressLimitType.QUANTITY;
 
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
 import javax.persistence.Entity;
+import javax.persistence.Enumerated;
 import javax.persistence.FetchType;
 import javax.persistence.GeneratedValue;
 import javax.persistence.Id;
@@ -49,6 +52,10 @@ public class Column {
 	@Min(1)
 	private Integer workInProgressLimit;
 	
+	@NotNull
+	@Enumerated(STRING)
+	private WorkInProgressLimitType workInProgressLimitType = QUANTITY;
+	
 	@Version
 	private long version;
 	
@@ -58,11 +65,13 @@ public class Column {
 	
 	protected Column() {}
 	
-	public Column(long boardId, String name, int position, Integer workInProgressLimit) {
+	public Column(long boardId, String name, int position, Integer workInProgressLimit,
+			WorkInProgressLimitType workInProgressLimitType) {
 		this.boardId = boardId;
 		this.name = name;
 		this.position = position;
 		this.workInProgressLimit = workInProgressLimit;
+		this.workInProgressLimitType = workInProgressLimitType;
 	}
 	
 	public ColumnSnapshot toSnapshot() {
@@ -75,7 +84,7 @@ public class Column {
 			.map(Task::toSnapshot)
 			.collect(toList());
 		
-		return new ColumnSnapshot(id, name, boardId, position, workInProgressLimit, taskSnapshots);
+		return new ColumnSnapshot(id, name, boardId, position, workInProgressLimit, workInProgressLimitType, taskSnapshots);
 	}
 	
 	int countTasks() {
@@ -154,9 +163,10 @@ public class Column {
 		return new ArrayList<>(tasks);
 	}
 
-	public void edit(String name, Integer workInProgressLimit) {
+	public void edit(String name, Integer workInProgressLimit, WorkInProgressLimitType workInProgressLimitType) {
 		this.name = name;
 		this.workInProgressLimit = workInProgressLimit;
+		this.workInProgressLimitType = workInProgressLimitType;
 	}
 	
 }
