@@ -50,7 +50,8 @@ public class TaskBOImpl implements TaskBO {
 		Column column = columnRepository.findOne(taskSnapshot.getColumnId());
 		
 		if (position >= column.toSnapshot().getTasks().size()) {
-			throw new IllegalArgumentException("Given position exceeds number of tasks in column");
+			throw new IllegalArgumentException("Given position <" + position + "> exceeds number of tasks <" 
+					+ column.toSnapshot().getTasks().size() + "> in column");
 		}
 		
 		column.moveTask(taskSnapshot.getId(), position);
