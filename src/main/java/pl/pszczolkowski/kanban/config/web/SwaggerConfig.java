@@ -1,7 +1,5 @@
 package pl.pszczolkowski.kanban.config.web;
 
-import static com.google.common.base.Predicates.and;
-import static com.google.common.base.Predicates.not;
 import static com.google.common.collect.Lists.newArrayList;
 import static springfox.documentation.builders.PathSelectors.regex;
 
@@ -56,21 +54,7 @@ public class SwaggerConfig {
       return new Docket(DocumentationType.SWAGGER_2)
          .groupName(title)
          .select()
-         .paths(and(not(regex("/admin/.*")), regex(".*")))
-         .build()
-         .apiInfo(apiInfo(title))
-         .protocols(Sets.newHashSet("http", "https"))
-         .securitySchemes(newArrayList(apiKey()))
-         .securityContexts(newArrayList(securityContext()));
-   }
-
-   @Bean
-   public Docket adminApiDocumentationGroup() {
-      String title = "Admin-API";
-      return new Docket(DocumentationType.SWAGGER_2)
-         .groupName(title)
-         .select()
-         .paths(regex("/admin/.*"))
+         .paths(regex(".*"))
          .build()
          .apiInfo(apiInfo(title))
          .protocols(Sets.newHashSet("http", "https"))
