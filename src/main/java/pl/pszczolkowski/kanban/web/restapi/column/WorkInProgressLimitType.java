@@ -8,7 +8,7 @@ public enum WorkInProgressLimitType {
 			pl.pszczolkowski.kanban.domain.task.entity.WorkInProgressLimitType workInProgressLimitType) {
 		switch (workInProgressLimitType) {
 			case QUANTITY:
-				return WorkInProgressLimitType.QUANTITY;
+				return QUANTITY;
 			case SIZE:
 				return SIZE;
 			default:
@@ -21,7 +21,7 @@ public enum WorkInProgressLimitType {
 			case QUANTITY:
 				return pl.pszczolkowski.kanban.domain.task.entity.WorkInProgressLimitType.QUANTITY;
 			case SIZE:
-				return pl.pszczolkowski.kanban.domain.task.entity.WorkInProgressLimitType.QUANTITY;
+				return pl.pszczolkowski.kanban.domain.task.entity.WorkInProgressLimitType.SIZE;
 			default:
 				throw new IllegalArgumentException("Unsupported limit type <" + this + ">");
 		}
