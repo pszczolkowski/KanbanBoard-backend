@@ -48,4 +48,12 @@ public class LabelBOImpl implements LabelBO {
 		}
 	}
 
+	@Override
+	public void edit(Long labelId, String name, String color) {
+		Label label = labelRepository.findOne(labelId);
+		label.edit(name, color);
+		
+		labelRepository.save(label);
+	}
+
 }

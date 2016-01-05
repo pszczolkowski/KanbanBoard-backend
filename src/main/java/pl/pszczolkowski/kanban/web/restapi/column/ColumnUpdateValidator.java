@@ -48,6 +48,13 @@ public class ColumnUpdateValidator extends AbstractValidator {
 			errors.rejectValue("columnId", "ColumnWithGivenIdDoesntExist");
 			return;
 		}
+		
+		ColumnSnapshot columnWithGivenNameSnapshot = columnSnapshotFinder.findByNameAndBoardId(columnUpdate.getName(),
+				columnSnapshot.getBoardId());
+		if (columnWithGivenNameSnapshot != null && columnWithGivenNameSnapshot.getId() != columnSnapshot.getId()) {
+			errors.rejectValue("name", "ColumnWithGivenNameAlreadyExistsInTheBoard");
+			return;
+		}
 	}
 	
 	private boolean loggedUserIsNotBoardAdmin(BoardSnapshot boardSnapshot) {

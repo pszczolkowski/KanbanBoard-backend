@@ -58,5 +58,10 @@ public class Label {
 		
 		return new LabelSnapshot(id, boardId, name, color);
 	}
+
+	public void edit(String name, String color) {
+		this.name = name;
+		this.color = color;
+	}
 	
 }

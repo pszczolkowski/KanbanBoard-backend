@@ -5,6 +5,7 @@ import static org.springframework.http.HttpStatus.CREATED;
 import static org.springframework.web.bind.annotation.RequestMethod.DELETE;
 import static org.springframework.web.bind.annotation.RequestMethod.GET;
 import static org.springframework.web.bind.annotation.RequestMethod.POST;
+import static org.springframework.web.bind.annotation.RequestMethod.PUT;
 import static pl.pszczolkowski.kanban.domain.board.entity.Permissions.ADMIN;
 
 import java.util.List;
@@ -44,19 +45,27 @@ public class LabelApi {
 	private final LabelSnapshotFinder labelSnapshotFinder;
 	private final BoardSnapshotFinder boardSnapshotFinder;
 	private final Validator labelNewValidator;
+	private final Validator labelUpdateValidator;
 	
 	@Autowired
 	public LabelApi(LabelBO labelBO, LabelSnapshotFinder labelSnapshotFinder, BoardSnapshotFinder boardSnapshotFinder, 
-			@Qualifier("labelNewValidator") Validator labelNewValidator) {
+			@Qualifier("labelNewValidator") Validator labelNewValidator,
+			@Qualifier("labelUpdateValidator") Validator labelUpdateValidator) {
 		this.labelBO = labelBO;
 		this.labelSnapshotFinder = labelSnapshotFinder;
 		this.boardSnapshotFinder = boardSnapshotFinder;
 		this.labelNewValidator = labelNewValidator;
+		this.labelUpdateValidator = labelUpdateValidator;
 	}
 
 	@InitBinder("labelNew")
 	protected void initNewBinder(WebDataBinder binder) {
 		binder.setValidator(labelNewValidator);
+	}
+	
+	@InitBinder("labelUpdate")
+	protected void initUpdateBinder(WebDataBinder binder) {
+		binder.setValidator(labelUpdateValidator);
 	}
 	
 	@ApiOperation(
@@ -111,6 +120,20 @@ public class LabelApi {
 		return ResponseEntity
 				.status(CREATED)
 				.body(new Label(labelSnapshot));
+	}
+	
+	@ApiOperation(
+		value = "Update existing label",
+		notes = "Returns empty body")
+	@ApiResponses({
+		@ApiResponse(code = 200, message = "Label updated"),
+		@ApiResponse(code = 400, message = "Given input was invalid")})
+	@RequestMapping(
+		method = PUT,
+		consumes = MediaType.APPLICATION_JSON_VALUE)
+	public HttpEntity<Void> update(@Valid @RequestBody LabelUpdate labelUpdate) {
+		labelBO.edit(labelUpdate.getId(), labelUpdate.getName(), labelUpdate.getColor());
+		return new ResponseEntity<>(HttpStatus.OK);
 	}
 	
 	@ApiOperation(
