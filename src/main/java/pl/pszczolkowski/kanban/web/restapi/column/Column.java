@@ -16,6 +16,7 @@ public class Column {
 	private final long boardId;
 	private final int position;
 	private final Integer workInProgressLimit;
+	private final WorkInProgressLimitType workInProgressLimitType;
 	private final List<Task> tasks;
 	
 	public Column(ColumnSnapshot columnSnapshot) {
@@ -24,6 +25,7 @@ public class Column {
 		this.boardId = columnSnapshot.getBoardId();
 		this.position = columnSnapshot.getPosition();
 		this.workInProgressLimit = columnSnapshot.getWorkInProgressLimit();
+		this.workInProgressLimitType = WorkInProgressLimitType.from(columnSnapshot.getWorkInProgressLimitType());
 		this.tasks = columnSnapshot
 				.getTasks()
 				.stream()
@@ -56,6 +58,11 @@ public class Column {
 		return workInProgressLimit;
 	}
 	
+	@ApiModelProperty("Work in progress limit type for column")
+	public WorkInProgressLimitType getWorkInProgressLimitType() {
+		return workInProgressLimitType;
+	}
+
 	@ApiModelProperty("Tasks assigned to the column")
 	public List<Task> getTasks() {
 		return tasks;
