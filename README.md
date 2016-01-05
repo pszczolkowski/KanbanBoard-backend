@@ -13,3 +13,7 @@ In order to use API you need some kind of client. Preffered application is avail
 
 ## How to run tests
 Go to project directory containing `pom.xml` file and run the following command: `mvn install -PTESTS`
+
+
+## REST API documentation
+REST API documentation as JSON is available at `http://localhost:8080/kanbanboard/api/v2/api-docs?group=Business-API`
