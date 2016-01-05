@@ -1,0 +1,1 @@
+ALTER TABLE board_column ADD COLUMN work_in_progress_limit_type VARCHAR(255) NOT NULL;

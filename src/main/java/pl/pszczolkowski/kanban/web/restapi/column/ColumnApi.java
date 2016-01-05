@@ -156,7 +156,8 @@ public class ColumnApi {
 		method = POST, 
 		consumes = MediaType.APPLICATION_JSON_VALUE)
 	public HttpEntity<Column> add(@Valid @RequestBody ColumnNew columnNew) {
-		ColumnSnapshot columnSnapshot = columnBO.add(columnNew.getBoardId(), columnNew.getName(), columnNew.getWorkInProgressLimit());
+		ColumnSnapshot columnSnapshot = columnBO.add(columnNew.getBoardId(), columnNew.getName(),
+				columnNew.getWorkInProgressLimit(), columnNew.getWorkInProgressLimitType().toDomain());
 		return ResponseEntity
 				.status(CREATED)
 				.body(new Column(columnSnapshot));
@@ -172,7 +173,8 @@ public class ColumnApi {
 		method = PUT, 
 		consumes = MediaType.APPLICATION_JSON_VALUE)
 	public HttpEntity<Void> update(@Valid @RequestBody ColumnUpdate columnUpdate) {
-		columnBO.edit(columnUpdate.getId(), columnUpdate.getName(), columnUpdate.getWorkInProgressLimit());
+		columnBO.edit(columnUpdate.getId(), columnUpdate.getName(), columnUpdate.getWorkInProgressLimit(),
+				columnUpdate.getWorkInProgressLimitType().toDomain());
 		return new ResponseEntity<>(HttpStatus.OK);
 	}
 	

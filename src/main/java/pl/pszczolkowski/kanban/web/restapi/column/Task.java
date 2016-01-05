@@ -18,6 +18,7 @@ public class Task {
 	private final int position;
 	private final Long labelId;
 	private final TaskPriority priority;
+	private final float size;
 	private final LocalDateTime createdAt;
 	private final long columnId;
 	
@@ -31,6 +32,7 @@ public class Task {
 		this.position = taskSnapshot.getPosition();
 		this.labelId = taskSnapshot.getLabelId();
 		this.priority = TaskPriority.from(taskSnapshot.getPriority());
+		this.size = taskSnapshot.getSize();
 		this.createdAt = taskSnapshot.getCreatedAt();
 		this.columnId = taskSnapshot.getColumnId();
 	}
@@ -80,6 +82,11 @@ public class Task {
 		return priority;
 	}
 
+	@ApiModelProperty("Task size")
+	public float getSize() {
+		return size;
+	}
+	
 	@ApiModelProperty("Date of task creation")
 	public LocalDateTime getCreatedAt() {
 		return createdAt;

@@ -10,6 +10,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 
 import pl.pszczolkowski.kanban.domain.task.entity.Column;
 import pl.pszczolkowski.kanban.domain.task.entity.Task;
+import pl.pszczolkowski.kanban.domain.task.entity.WorkInProgressLimitType;
 import pl.pszczolkowski.kanban.domain.task.repository.ColumnRepository;
 import pl.pszczolkowski.kanban.domain.task.snapshot.ColumnSnapshot;
 import pl.pszczolkowski.kanban.shared.annotations.BusinessObject;
@@ -27,14 +28,14 @@ public class ColumnBOImpl implements ColumnBO {
 	}
 
 	@Override
-	public ColumnSnapshot add(long boardId, String name, Integer workInProgressLimit) {
+	public ColumnSnapshot add(long boardId, String name, Integer workInProgressLimit, WorkInProgressLimitType workInProgressLimitType) {
 		if (columnAlreadyExists(boardId, name)) {
 			throw new IllegalArgumentException("Column with name <" + name + "> already exist in board with id <" + boardId + ">");
 		}
 		
 		Optional<Integer> maxPositionOnBoard = columnRepository.findMaxPositionOnBoard(boardId);
 		
-		Column column = new Column(boardId, name, maxPositionOnBoard.orElse(0) + 1, workInProgressLimit);
+		Column column = new Column(boardId, name, maxPositionOnBoard.orElse(0) + 1, workInProgressLimit, workInProgressLimitType);
 		column = columnRepository.save(column);
 		
 		LOGGER.info("Column <{}> added to board with id <{}>",
@@ -98,13 +99,13 @@ public class ColumnBOImpl implements ColumnBO {
 	}
 
 	@Override
-	public void edit(Long columnId, String name, Integer workInProgressLimit) {
+	public void edit(Long columnId, String name, Integer workInProgressLimit, WorkInProgressLimitType workInProgressLimitType) {
 		Column column = columnRepository.findOne(columnId);
 		ColumnSnapshot columnSnapshot = column.toSnapshot();
 		
 		if (!columnSnapshot.getName().equals(name) ||
 				!Objects.equals(columnSnapshot.getWorkInProgressLimit(), workInProgressLimit)) {
-			column.edit(name, workInProgressLimit);
+			column.edit(name, workInProgressLimit, workInProgressLimitType);
 			columnRepository.save(column);
 		}
 	}

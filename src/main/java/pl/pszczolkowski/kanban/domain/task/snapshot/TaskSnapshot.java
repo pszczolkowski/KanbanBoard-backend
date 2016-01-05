@@ -15,11 +15,12 @@ public class TaskSnapshot {
 	private final int position;
 	private final Long labelId;
 	private final TaskPriority priority;
+	private final float size;
 	private final LocalDateTime createdAt;
 	private final long columnId;
 	
 	public TaskSnapshot(long id, int idOnBoard, long boardId, String title, String description, Long assigneeId,
-			int position, Long labelId, TaskPriority priority, LocalDateTime createdAt, long columnId) {
+			int position, Long labelId, TaskPriority priority, float size, LocalDateTime createdAt, long columnId) {
 		this.id = id;
 		this.idOnBoard = idOnBoard;
 		this.boardId = boardId;
@@ -29,6 +30,7 @@ public class TaskSnapshot {
 		this.position = position;
 		this.labelId = labelId;
 		this.priority = priority;
+		this.size = size;
 		this.createdAt = createdAt;
 		this.columnId = columnId;
 	}
@@ -69,6 +71,10 @@ public class TaskSnapshot {
 		return priority;
 	}
 
+	public float getSize() {
+		return size;
+	}
+	
 	public LocalDateTime getCreatedAt() {
 		return createdAt;
 	}

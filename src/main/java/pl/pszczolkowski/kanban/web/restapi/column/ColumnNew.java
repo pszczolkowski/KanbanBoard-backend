@@ -1,5 +1,7 @@
 package pl.pszczolkowski.kanban.web.restapi.column;
 
+import static pl.pszczolkowski.kanban.web.restapi.column.WorkInProgressLimitType.QUANTITY;
+
 import javax.validation.constraints.Min;
 import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Size;
@@ -22,6 +24,9 @@ public class ColumnNew {
 	
 	@Min(1)
 	private Integer workInProgressLimit;
+	
+	@NotNull
+	private WorkInProgressLimitType workInProgressLimitType = QUANTITY;
 	
 	@ApiModelProperty(
 		value = "Name for column",
@@ -52,8 +57,19 @@ public class ColumnNew {
 		return workInProgressLimit;
 	}
 
+	@ApiModelProperty(
+		value = "Work in progress limit type for the column",
+		required = false)
 	public void setWorkInProgressLimit(Integer workInProgressLimit) {
 		this.workInProgressLimit = workInProgressLimit;
+	}
+
+	public WorkInProgressLimitType getWorkInProgressLimitType() {
+		return workInProgressLimitType;
+	}
+
+	public void setWorkInProgressLimitType(WorkInProgressLimitType workInProgressLimitType) {
+		this.workInProgressLimitType = workInProgressLimitType;
 	}
 	
 }

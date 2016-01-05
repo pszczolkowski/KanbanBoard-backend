@@ -5,13 +5,14 @@ import pl.pszczolkowski.kanban.domain.task.snapshot.TaskSnapshot;
 
 public interface TaskBO {
 
-	TaskSnapshot create(long columnId, String title, String description, Long assigneeId, Long labelId, TaskPriority taskPriority);
+	TaskSnapshot create(long columnId, String title, String description, Long assigneeId, Long labelId, TaskPriority taskPriority,
+			float size);
 
 	void move(long taskId, int position);
 	
 	void move(long taskId, Long columnId, int position);
 
-	void edit(Long id, String title, String description, TaskPriority taskPriority);
+	void edit(Long id, String title, String description, TaskPriority taskPriority, float size);
 
 	void detachLabelFromTasksInBoard(Long labelId);
 
