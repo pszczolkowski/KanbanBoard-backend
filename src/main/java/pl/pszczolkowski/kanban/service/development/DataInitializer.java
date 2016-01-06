@@ -167,25 +167,21 @@ public class DataInitializer implements ApplicationContextAware {
 		while (date.isBefore(now)) {
 			boardHistoryBO.save(boardSnapshot.getId(), date, columnSizes);
 			
-			for (ColumnSnapshot columnSnapshot : columnSnapshots) {
-				if (columnIsTheLastOne(columnSnapshot)) {
-					columnSizes.put(columnSnapshot.getName(), columnSizes.get(columnSnapshot.getName()) + RANDOM.nextInt(2));
-				} else {
-					columnSizes.put(columnSnapshot.getName(), randomColumnSize(columnSizes.get(columnSnapshot.getName())));
+			for (int i = columnSnapshots.size() - 2; i >= 0; i--) {
+				if (columnSizes.get(columnSnapshots.get(i).getName()) > 0) {
+					if (RANDOM.nextBoolean()) {
+						columnSizes.put(columnSnapshots.get(i).getName(), columnSizes.get(columnSnapshots.get(i).getName()) - 1);
+						columnSizes.put(columnSnapshots.get(i + 1).getName(), columnSizes.get(columnSnapshots.get(i + 1).getName()) + 1);
+					}
 				}
+			}
+			
+			if (RANDOM.nextBoolean() && RANDOM.nextBoolean()) {
+				columnSizes.put(columnSnapshots.get(0).getName(), columnSizes.get(columnSnapshots.get(0).getName()) + 1);
 			}
 			
 			date = date.plusDays(1);
 		}
-	}
-
-	private boolean columnIsTheLastOne(ColumnSnapshot columnSnapshot) {
-		return columnSnapshots.get(columnSnapshots.size() - 1).equals(columnSnapshot);
-	}
-
-	private Integer randomColumnSize(int previousColumnSize) {
-		int result = previousColumnSize + RANDOM.nextInt(3) - 1;
-		return result < 0 ? 0 : result;
 	}
 	
 }
