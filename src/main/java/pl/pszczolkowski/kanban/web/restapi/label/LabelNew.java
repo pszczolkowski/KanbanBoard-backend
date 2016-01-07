@@ -46,5 +46,17 @@ public class LabelNew {
 	public String getColor() {
 		return color;
 	}
+
+	public void setBoardId(long boardId) {
+		this.boardId = boardId;
+	}
+
+	public void setName(String name) {
+		this.name = name;
+	}
+
+	public void setColor(String color) {
+		this.color = color;
+	}
 	
 }
