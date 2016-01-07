@@ -80,8 +80,11 @@ public class TaskBuilder implements ApplicationContextAware {
 		
 		Column column = columnRepository.findOne(columnSnapshot.getId());
 		Task task = new Task(column, idOnBoard, title, description, assigneeId, labelId, priority, size);
-		
 		task = taskRepository.save(task);
+		
+		column.addTask(task);
+		columnRepository.save(column);
+		
 		return task.toSnapshot();
 	}
 	
