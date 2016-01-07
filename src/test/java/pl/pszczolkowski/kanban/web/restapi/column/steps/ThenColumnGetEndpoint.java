@@ -1,4 +1,4 @@
-package pl.pszczolkowski.kanban.web.restapi.task.steps;
+package pl.pszczolkowski.kanban.web.restapi.column.steps;
 
 import static org.hamcrest.Matchers.equalTo;
 import static org.hamcrest.Matchers.is;

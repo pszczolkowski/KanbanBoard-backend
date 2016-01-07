@@ -1,4 +1,4 @@
-package pl.pszczolkowski.kanban.web.restapi.task;
+package pl.pszczolkowski.kanban.web.restapi.column;
 
 import static pl.pszczolkowski.kanban.util.Cleaner.clearBoards;
 import static pl.pszczolkowski.kanban.util.Cleaner.clearUsers;
@@ -19,9 +19,9 @@ import com.tngtech.jgiven.junit.ScenarioTest;
 import pl.pszczolkowski.kanban.Application;
 import pl.pszczolkowski.kanban.domain.task.finder.ColumnSnapshotFinder;
 import pl.pszczolkowski.kanban.util.Cleaner;
+import pl.pszczolkowski.kanban.web.restapi.column.steps.GivenColumnAddEndpoint;
+import pl.pszczolkowski.kanban.web.restapi.column.steps.ThenColumnAddEndpoint;
 import pl.pszczolkowski.kanban.web.restapi.shared.WhenStage;
-import pl.pszczolkowski.kanban.web.restapi.task.steps.GivenColumnAddEndpoint;
-import pl.pszczolkowski.kanban.web.restapi.task.steps.ThenColumnAddEndpoint;
 
 @RunWith(SpringJUnit4ClassRunner.class)
 @SpringApplicationConfiguration(classes = Application.class)

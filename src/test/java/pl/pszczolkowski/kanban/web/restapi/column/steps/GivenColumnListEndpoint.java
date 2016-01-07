@@ -1,4 +1,4 @@
-package pl.pszczolkowski.kanban.web.restapi.task.steps;
+package pl.pszczolkowski.kanban.web.restapi.column.steps;
 
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static pl.pszczolkowski.kanban.builder.BoardBuilder.aBoard;
