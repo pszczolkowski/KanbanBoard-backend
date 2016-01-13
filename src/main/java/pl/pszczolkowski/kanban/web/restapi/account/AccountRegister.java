@@ -10,7 +10,7 @@ public class AccountRegister {
 
 	@NotNull
 	@Size(min = 3, max = 20)
-	@Pattern(regexp = "^[a-z0-9]*$")
+	@Pattern(regexp = "^[a-zA-Z0-9]*$")
 	private String login;
 
 	@NotNull
